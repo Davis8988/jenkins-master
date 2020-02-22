@@ -109,7 +109,7 @@ def main() {
 		if (credExist) {
 			println "Found credential with id: '${credExist.id}' and username: '${credExist.username}'"
 			println "Updating it.."
-			updateCredentials(credExist, credentialsArr)
+			updateCredentials(credExist, credArr)
 			return
 		} else {
 			println "No credentials found with username: '${credArr.userName}' and id: '${credArr.id}'"
