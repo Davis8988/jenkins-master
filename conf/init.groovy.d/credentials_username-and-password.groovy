@@ -23,7 +23,7 @@ credentialsArr = [
 	  id:           'viewer',
 	  password:     '12345678',
 	  username:     'viewer'
-	],
+	]
 	
 ]
 
@@ -72,7 +72,7 @@ updateCredentials = {cred, updateArr ->
 }
 
 
-def createNewCreds = { credsArr ->
+createNewCreds = { credsArr ->
 	// get Jenkins instance
 	Jenkins jenkins = Jenkins.getInstance()
 
@@ -94,9 +94,9 @@ def createNewCreds = { credsArr ->
 	// add credential to store
 	def result = store.addCredentials(domain, jenkinsKeyUsernameWithPassword)
 	if (result.toBoolean()) {
-		println "Success - Added new credentials: ${jenkinsKeyUsernameWithPassword.userName}"
+		println "Success - Added new credentials: ${jenkinsKeyUsernameWithPassword.username}"
 	} else {
-		println "Error - Failed to add new credentials: ${jenkinsKeyUsernameWithPassword.userName}"
+		println "Error - Failed to add new credentials: ${jenkinsKeyUsernameWithPassword.username}"
 	}
 	
 	// save to disk
@@ -104,19 +104,22 @@ def createNewCreds = { credsArr ->
 }
 
 def main() {
-	credentialsArr.each {credArr -> 
-		def credExist = checkCredentialsExist(credArr.id)
+	println "Configuring Credentials"
+	credentialsArr.each {credsArr -> 
+		def credExist = checkCredentialsExist(credsArr.id)
 		if (credExist) {
 			println "Found credential with id: '${credExist.id}' and username: '${credExist.username}'"
 			println "Updating it.."
-			updateCredentials(credExist, credArr)
+			updateCredentials(credExist, credsArr)
 			return
 		} else {
-			println "No credentials found with username: '${credArr.userName}' and id: '${credArr.id}'"
+			println "No credentials found with username: '${credsArr.username}' and id: '${credsArr.id}'"
 			println "Adding new ones.."
-			createNewCreds(credArr)
+			createNewCreds(credsArr)
 		}
 	}
+	
+	println "Finished configuring Credentials"
 }
 
 // Start 
