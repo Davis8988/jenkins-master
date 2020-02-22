@@ -9,6 +9,9 @@ docker stop jenkins-master
 echo [Info] Getting new code:
 git checkout configure/users
 git pull
+
+echo [Info] Setting permissions to ./build.sh
+chmod +x build.sh
  
 echo [Info] Building image:
 docker build -t davis8988/jenkins-master . 
