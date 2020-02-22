@@ -11,8 +11,6 @@ RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 
 # Copy jenkins jobs
 COPY jobs-configs/1-github-seed-job.xml           /usr/share/jenkins/ref/jobs/1-github-seed-job/config.xml
-COPY jobs-configs/2-job-dsl-seed-job.xml          /usr/share/jenkins/ref/jobs/2-job-dsl-seed-job/config.xml
-COPY jobs-configs/3-conference-app-seed-job.xml   /usr/share/jenkins/ref/jobs/3-conference-app-seed-job/config.xml
 
 # copy jenkins configuration
 COPY conf/init.groovy.d /usr/share/jenkins/ref/init.groovy.d
