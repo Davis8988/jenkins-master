@@ -16,7 +16,7 @@ docker build -t davis8988/jenkins-master .
 echo [Info] Tagging:
 docker tag davis8988/jenkins-master davis8988/jenkins-master:configured-2.194-lts 
 
-if [ -z "$shouldPush" ]; then echo [Info] Pushing:; docker push davis8988/jenkins-master:configured-2.194-lts; fi
+if [ ! -z "$shouldPush" ]; then echo [Info] Pushing:; docker push davis8988/jenkins-master:configured-2.194-lts; fi
 
 echo [Info] Removing old stopped container: jenkins-master
 docker rm -f jenkins-master

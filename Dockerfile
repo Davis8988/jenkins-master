@@ -14,7 +14,7 @@ COPY jobs-configs/1-github-seed-job.xml           /usr/share/jenkins/ref/jobs/1-
 
 # copy jenkins configuration
 COPY conf/init.groovy.d /usr/share/jenkins/ref/init.groovy.d
-COPY seeds/jobs /usr/share/jenkins/ref/jobs
+COPY seeds/jobs  /usr/share/jenkins/ref/jobs
 COPY seeds/views /usr/share/jenkins/ref/views
 
 # SSH Keys & Credentials
