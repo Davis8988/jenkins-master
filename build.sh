@@ -3,9 +3,6 @@ shouldPush=$1
 
 echo [Info] Building jenkins-master image
 
-echo [Info] Stopping running container: jenkins-master
-docker stop jenkins-master
-
 echo [Info] Getting new code:
 git checkout configure/users
 git pull
@@ -21,14 +18,11 @@ docker tag davis8988/jenkins-master davis8988/jenkins-master:configured-2.194-lt
 
 if [ ! -z "$shouldPush" ]; then echo [Info] Pushing:; docker push davis8988/jenkins-master:configured-2.194-lts; fi
 
-echo [Info] Removing old stopped container: jenkins-master
-docker rm -f jenkins-master
-
-echo [Info] Running new container: jenkins-master
-export contid=$(docker run -d --name jenkins-master -p 8080:8080 davis8988/jenkins-master:configured-2.194-lts)
+echo [Info] Running container: jenkins-master
+docker-compose up -d
 
 echo [Info] Reading logs:
-docker logs -f $contid
+docker logs -f jenkins-master
 
 echo [Info]
 Finished

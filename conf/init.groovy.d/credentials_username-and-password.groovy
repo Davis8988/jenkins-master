@@ -8,12 +8,23 @@ import hudson.util.Secret
 import jenkins.model.Jenkins
 
 
+
+
 // parameters
-credentialsObj = [
-  description:  'Description here',
-  id:           'key-id-here2',
-  password:     '12345678901234567890',
-  username:     'yess'
+credentialsArr = [
+	[
+	  description:  'Rebuilder user',
+	  id:           'rebuilder',
+	  password:     '12345678',
+	  username:     'rebuilder'
+	],
+	[
+	  description:  'Viewer user',
+	  id:           'viewer',
+	  password:     '12345678',
+	  username:     'viewer'
+	],
+	
 ]
 
 // func:
@@ -82,21 +93,29 @@ def createNewCreds = { credsArr ->
 
 	// add credential to store
 	def result = store.addCredentials(domain, jenkinsKeyUsernameWithPassword)
-
+	if (result.toBoolean()) {
+		println "Success - Added new credentials: ${jenkinsKeyUsernameWithPassword.userName}"
+	} else {
+		println "Error - Failed to add new credentials: ${jenkinsKeyUsernameWithPassword.userName}"
+	}
+	
 	// save to disk
 	jenkins.save()
 }
 
 def main() {
-	def credExist = checkCredentialsExist('your-username-here')
-	if (credExist) {
-		println "Found credential with id: '${credExist.id}' and username: '${credExist.username}'"
-		println "Updating it.."
-		updateCredentials(credExist, credentialsObj)
-		return
-	} else {
-		println "No credentials found with username: '${credentialsObj.userName}' and id: '${credentialsObj.id}'"
-		println "Adding new ones.."
+	credentialsArr.each {credArr -> 
+		def credExist = checkCredentialsExist(credArr.id)
+		if (credExist) {
+			println "Found credential with id: '${credExist.id}' and username: '${credExist.username}'"
+			println "Updating it.."
+			updateCredentials(credExist, credentialsArr)
+			return
+		} else {
+			println "No credentials found with username: '${credArr.userName}' and id: '${credArr.id}'"
+			println "Adding new ones.."
+			createNewCreds(credArr)
+		}
 	}
 }
 

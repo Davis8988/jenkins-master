@@ -1,6 +1,7 @@
 version: '3'
 services:
   jenkins:
+    name: jenkins-master
     image: 'davis8988/jenkins-master:configured-2.194-lts'
     ports:
       - '8080:8080'
