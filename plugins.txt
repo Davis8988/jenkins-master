@@ -21,3 +21,4 @@ ssh-slaves
 timestamper
 token-macro
 view-job-filters
+workflow-cps-global-lib
