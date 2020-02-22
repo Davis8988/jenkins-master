@@ -36,9 +36,6 @@ private void configureJenkins() {
         }
     }
 
-    // disable remoting cli
-    jenkins.model.Jenkins.instance.getDescriptor("jenkins.CLI").get().setEnabled(false)
-
     // set markupformatter
     Jenkins.instance.setMarkupFormatter(new RawHtmlMarkupFormatter(false))
 
