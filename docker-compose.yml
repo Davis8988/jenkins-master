@@ -1,0 +1,7 @@
+version: '3'
+services:
+  jenkins:
+    image: 'davis8988/jenkins-master:configured-2.194-lts'
+    ports:
+      - '8080:8080'
+      - '50000:50000'
