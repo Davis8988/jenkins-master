@@ -10,16 +10,22 @@ import javaposse.jobdsl.plugin.JenkinsJobManagement
 /**
  * Startup script
  */
+println "--- Started ---"
 
 Logger.global.info("[Running] startup script")
 
+println "--- Conf ---"
 configureJenkins()
 
+println "--- Jobs ---"
 seedJenkinsJobs()
 
+println "--- Views ---"
 seedJenkinsViews()
 
 Logger.global.info("[Done] startup script")
+
+println "--- Finished ---"
 
 /**
  * Configure jenkins default settings
@@ -36,9 +42,6 @@ private void configureJenkins() {
         }
     }
 
-    // disable remoting cli
-    jenkins.model.Jenkins.instance.getDescriptor("jenkins.CLI").get().setEnabled(false)
-
     // set markupformatter
     Jenkins.instance.setMarkupFormatter(new RawHtmlMarkupFormatter(false))
 
@@ -46,11 +49,12 @@ private void configureJenkins() {
     Jenkins.instance.setNumExecutors(6)
 }
 
+
 /**
- * Creates jenkins default views
+ * Creates jenkins default jobs
  */
-private void seedJenkinsViews() {
-    File seeds = new File('/var/jenkins_home/seeds/views/')
+private void seedJenkinsJobs() {
+    File seeds = new File('/usr/share/jenkins/ref/jobs/')
     JenkinsJobManagement jobManagement = new JenkinsJobManagement(System.out, [:], new File('.'))
 
     new DslScriptLoader(jobManagement).with {
@@ -62,11 +66,12 @@ private void seedJenkinsViews() {
     }
 }
 
+
 /**
- * Creates jenkins default jobs
+ * Creates jenkins default views
  */
-private void seedJenkinsJobs() {
-    File seeds = new File('/var/jenkins_home/seeds/jobs/')
+private void seedJenkinsViews() {
+    File seeds = new File('/usr/share/jenkins/ref/views/')
     JenkinsJobManagement jobManagement = new JenkinsJobManagement(System.out, [:], new File('.'))
 
     new DslScriptLoader(jobManagement).with {
