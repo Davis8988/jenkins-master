@@ -27,14 +27,14 @@ def getServerResolverCredentials(String userId) {
 }
 
 
-String artiServ_ID = env.ARTIFACTORY_SERVER_ID ? env.ARTIFACTORY_SERVER_ID : "my-artifactiory"
-String artiServ_Url = env.ARTIFACTORY_SERVER_URL ? env.ARTIFACTORY_SERVER_URL : "https://servername:8443/artifactory"
-CredentialsConfig artiServ_deployerCredentials = getServerDeployerCredentials(env.ARTIFACTORY_SERVER_DEPLOYER_USER_ID)
-CredentialsConfig artiServ_resolverCredentials = getServerDeployerCredentials(env.ARTIFACTORY_SERVER_RESOLVER_USER_ID)
-int artiServ_timeoutSec = env.ARTIFACTORY_SERVER_TIMEOUT_SEC ? env.ARTIFACTORY_SERVER_TIMEOUT_SEC : 20
-Boolean artiServ_bypassProxy = env.ARTIFACTORY_SERVER_BYPASS_PROXY ? env.ARTIFACTORY_SERVER_BYPASS_PROXY : false
-Integer artiServ_connectionRetry = env.ARTIFACTORY_SERVER_CONNECTION_RETRY ? env.ARTIFACTORY_SERVER_CONNECTION_RETRY : 3
-Integer artiServ_deployThreadsCount = env.ARTIFACTORY_SERVER_DEPLOY_THREADS_COUNT ? env.ARTIFACTORY_SERVER_DEPLOY_THREADS_COUNT : 10
+String artiServ_ID                              = env.ARTIFACTORY_SERVER_ID                   ? env.ARTIFACTORY_SERVER_ID                               : "my-artifactiory"
+String artiServ_Url                             = env.ARTIFACTORY_SERVER_URL                  ? env.ARTIFACTORY_SERVER_URL                              : "https://servername:8443/artifactory"
+int artiServ_timeoutSec                         = env.ARTIFACTORY_SERVER_TIMEOUT_SEC          ? env.ARTIFACTORY_SERVER_TIMEOUT_SEC.toInteger()          : 20
+Boolean artiServ_bypassProxy                    = env.ARTIFACTORY_SERVER_BYPASS_PROXY         ? env.ARTIFACTORY_SERVER_BYPASS_PROXY                     : false
+Integer artiServ_connectionRetry                = env.ARTIFACTORY_SERVER_CONNECTION_RETRY     ? env.ARTIFACTORY_SERVER_CONNECTION_RETRY.toInteger()     : 3
+Integer artiServ_deployThreadsCount             = env.ARTIFACTORY_SERVER_DEPLOY_THREADS_COUNT ? env.ARTIFACTORY_SERVER_DEPLOY_THREADS_COUNT.toInteger() : 10
+CredentialsConfig artiServ_deployerCredentials  = getServerDeployerCredentials(env.ARTIFACTORY_SERVER_DEPLOYER_USER_ID)
+CredentialsConfig artiServ_resolverCredentials  = getServerDeployerCredentials(env.ARTIFACTORY_SERVER_RESOLVER_USER_ID)
 
 
 
