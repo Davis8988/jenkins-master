@@ -27,7 +27,7 @@ def getServerResolverCredentials(String userId) {
 }
 
 
-println "Artifactory Params:\n" +
+print "Artifactory Params:\n" +
 		" ARTIFACTORY_SERVER_ID=" + env.ARTIFACTORY_SERVER_ID +"\n" +
 		" ARTIFACTORY_SERVER_URL=" + env.ARTIFACTORY_SERVER_URL +"\n" +
 		" ARTIFACTORY_SERVER_TIMEOUT_SEC=" + env.ARTIFACTORY_SERVER_TIMEOUT_SEC +"\n" +
