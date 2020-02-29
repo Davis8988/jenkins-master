@@ -1,3 +1,4 @@
+artifactory
 active-directory
 ant
 antisamy-markup-formatter
