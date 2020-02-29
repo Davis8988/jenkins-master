@@ -10,7 +10,16 @@ def inst = Jenkins.getInstance()
 def artifactoryDesc = inst.getDescriptor("org.jfrog.hudson.ArtifactoryBuilder")
 
 
-println "--> Configuring Artifactory... "
+println "--> Configuring Artifactory <-- "
+
+println "Artifactory Params:\n" +
+		" ARTIFACTORY_SERVER_ID=" + env.ARTIFACTORY_SERVER_ID +"\n" +
+		" ARTIFACTORY_SERVER_URL=" + env.ARTIFACTORY_SERVER_URL +"\n" +
+		" ARTIFACTORY_SERVER_TIMEOUT_SEC=" + env.ARTIFACTORY_SERVER_TIMEOUT_SEC +"\n" +
+		" ARTIFACTORY_SERVER_BYPASS_PROXY=" + env.ARTIFACTORY_SERVER_BYPASS_PROXY +"\n" +
+		" ARTIFACTORY_SERVER_CONNECTION_RETRY=" + env.ARTIFACTORY_SERVER_CONNECTION_RETRY +"\n" +
+		" ARTIFACTORY_SERVER_DEPLOYER_USER_ID=" + env.ARTIFACTORY_SERVER_DEPLOYER_USER_ID +"\n" +
+		" ARTIFACTORY_SERVER_RESOLVER_USER_ID=" + env.ARTIFACTORY_SERVER_RESOLVER_USER_ID
 
 def getServerDeployerCredentials(String userId) {
 	if (userId) {
@@ -25,16 +34,6 @@ def getServerResolverCredentials(String userId) {
 	}
 	return new CredentialsConfig("", "", "", false)
 }
-
-
-print "Artifactory Params:\n" +
-		" ARTIFACTORY_SERVER_ID=" + env.ARTIFACTORY_SERVER_ID +"\n" +
-		" ARTIFACTORY_SERVER_URL=" + env.ARTIFACTORY_SERVER_URL +"\n" +
-		" ARTIFACTORY_SERVER_TIMEOUT_SEC=" + env.ARTIFACTORY_SERVER_TIMEOUT_SEC +"\n" +
-		" ARTIFACTORY_SERVER_BYPASS_PROXY=" + env.ARTIFACTORY_SERVER_BYPASS_PROXY +"\n" +
-		" ARTIFACTORY_SERVER_CONNECTION_RETRY=" + env.ARTIFACTORY_SERVER_CONNECTION_RETRY +"\n" +
-		" ARTIFACTORY_SERVER_DEPLOYER_USER_ID=" + env.ARTIFACTORY_SERVER_DEPLOYER_USER_ID +"\n" +
-		" ARTIFACTORY_SERVER_RESOLVER_USER_ID=" + env.ARTIFACTORY_SERVER_RESOLVER_USER_ID
 
 
 String artiServ_ID                              = env.ARTIFACTORY_SERVER_ID                   ? env.ARTIFACTORY_SERVER_ID                               : "my-artifactiory"
