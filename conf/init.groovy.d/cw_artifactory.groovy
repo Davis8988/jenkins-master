@@ -27,6 +27,16 @@ def getServerResolverCredentials(String userId) {
 }
 
 
+println "Artifactory Params:\n" +
+		" ARTIFACTORY_SERVER_ID=" + env.ARTIFACTORY_SERVER_ID +"\n" +
+		" ARTIFACTORY_SERVER_URL=" + env.ARTIFACTORY_SERVER_URL +"\n" +
+		" ARTIFACTORY_SERVER_TIMEOUT_SEC=" + env.ARTIFACTORY_SERVER_TIMEOUT_SEC +"\n" +
+		" ARTIFACTORY_SERVER_BYPASS_PROXY=" + env.ARTIFACTORY_SERVER_BYPASS_PROXY +"\n" +
+		" ARTIFACTORY_SERVER_CONNECTION_RETRY=" + env.ARTIFACTORY_SERVER_CONNECTION_RETRY +"\n" +
+		" ARTIFACTORY_SERVER_DEPLOYER_USER_ID=" + env.ARTIFACTORY_SERVER_DEPLOYER_USER_ID +"\n" +
+		" ARTIFACTORY_SERVER_RESOLVER_USER_ID=" + env.ARTIFACTORY_SERVER_RESOLVER_USER_ID
+
+
 String artiServ_ID                              = env.ARTIFACTORY_SERVER_ID                   ? env.ARTIFACTORY_SERVER_ID                               : "my-artifactiory"
 String artiServ_Url                             = env.ARTIFACTORY_SERVER_URL                  ? env.ARTIFACTORY_SERVER_URL                              : "https://servername:8443/artifactory"
 Integer artiServ_timeoutSec                     = env.ARTIFACTORY_SERVER_TIMEOUT_SEC          ? env.ARTIFACTORY_SERVER_TIMEOUT_SEC.toInteger()          : 20
