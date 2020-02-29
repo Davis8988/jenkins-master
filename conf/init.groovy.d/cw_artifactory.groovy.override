@@ -20,17 +20,6 @@ def getCredentialsConfig(String userId) {
 	return new CredentialsConfig("", "", "", false)
 }
 
-// Debug
-println "Artifactory Params:\n" +
-		" ARTIFACTORY_SERVER_ID=" + env.ARTIFACTORY_SERVER_ID +"\n" +
-		" ARTIFACTORY_SERVER_URL=" + env.ARTIFACTORY_SERVER_URL +"\n" +
-		" ARTIFACTORY_SERVER_TIMEOUT_SEC=" + env.ARTIFACTORY_SERVER_TIMEOUT_SEC +"\n" +
-		" ARTIFACTORY_SERVER_BYPASS_PROXY=" + env.ARTIFACTORY_SERVER_BYPASS_PROXY +"\n" +
-		" ARTIFACTORY_SERVER_CONNECTION_RETRY=" + env.ARTIFACTORY_SERVER_CONNECTION_RETRY +"\n" +
-		" ARTIFACTORY_SERVER_DEPLOY_THREADS_COUNT=" + env.ARTIFACTORY_SERVER_DEPLOY_THREADS_COUNT +"\n" +
-		" ARTIFACTORY_SERVER_DEPLOYER_USER_ID=" + env.ARTIFACTORY_SERVER_DEPLOYER_USER_ID +"\n" +
-		" ARTIFACTORY_SERVER_RESOLVER_USER_ID=" + env.ARTIFACTORY_SERVER_RESOLVER_USER_ID
-
 
 // Init params:
 String artiServ_ID                              = env.ARTIFACTORY_SERVER_ID                   ? env.ARTIFACTORY_SERVER_ID                                      : "my-artifactiory"
