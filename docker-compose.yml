@@ -6,3 +6,12 @@ services:
     ports:
       - '8080:8080'
       - '50000:50000'
+    environment:
+      - ARTIFACTORY_SERVER_ID="hello-world"
+      - ARTIFACTORY_SERVER_URL="https://servername:8443/artifactory00000"
+      - ARTIFACTORY_SERVER_DEPLOYER_USER_ID="rebuilder"
+      - ARTIFACTORY_SERVER_RESOLVER_USER_ID="rebuilder"
+      - ARTIFACTORY_SERVER_TIMEOUT_SEC=22
+      - ARTIFACTORY_SERVER_BYPASS_PROXY=false
+      - ARTIFACTORY_SERVER_CONNECTION_RETRY=5
+      - ARTIFACTORY_SERVER_DEPLOY_THREADS_COUNT=15
