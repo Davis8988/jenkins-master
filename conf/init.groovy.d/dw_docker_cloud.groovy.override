@@ -1,0 +1,168 @@
+import java.lang.System
+import com.nirima.jenkins.plugins.docker.DockerCloud
+import com.nirima.jenkins.plugins.docker.DockerTemplate
+import com.nirima.jenkins.plugins.docker.DockerTemplateBase
+import com.nirima.jenkins.plugins.docker.DockerImagePullStrategy
+import com.nirima.jenkins.plugins.docker.strategy.DockerOnceRetentionStrategy
+import com.nirima.jenkins.plugins.docker.launcher.AttachedDockerComputerLauncher
+import io.jenkins.docker.connector.DockerComputerAttachConnector
+import jenkins.model.Jenkins
+
+
+println "--> Configuring Docker-Cloud... "
+
+
+// Init
+// get Jenkins instance
+Jenkins jenkins = Jenkins.getInstance()
+def env = System.getenv()
+
+
+// Init params:
+
+	//     Docker Cloud Parameters
+	String dockCloud_name            = env.DOCKER_CLOUD_NAME                   ? env.DOCKER_CLOUD_NAME                               : "my-local-docker-cloud"
+	String dockCloud_hostUrl         = env.DOCKER_CLOUD_HOST_URL               ? env.DOCKER_CLOUD_HOST_URL                           : "unix:///var/run/docker.sock"
+	String dockCloud_credsId         = env.DOCKER_CLOUD_CREDS_ID               ? env.DOCKER_CLOUD_CREDS_ID                           : ""
+	String dockCloud_apiVersion      = env.DOCKER_CLOUD_API_VERSION            ? env.DOCKER_CLOUD_API_VERSION                        : ""
+	Integer dockCloud_conTimeoutSec  = env.DOCKER_CLOUD_CONNECTION_TIMEOUT_SEC ? env.DOCKER_CLOUD_CONNECTION_TIMEOUT_SEC.toInteger() : 4
+	Integer dockCloud_readTimeoutSec = env.DOCKER_CLOUD_READ_TIMEOUT_SEC       ? env.DOCKER_CLOUD_READ_TIMEOUT_SEC.toInteger()       : 60
+	String dockCloud_contCap         = env.DOCKER_CLOUD_CONTAINER_CAP          ? env.DOCKER_CLOUD_CONTAINER_CAP                      : 100
+	String dockCloud_hostName        = env.DOCKER_CLOUD_HOST_NAME              ? env.DOCKER_CLOUD_HOST_NAME                          : ""
+	
+	//     Docker Template Base Parameters
+	//String dockCloudImage_devices             = env.DOCKER_CLOUD_IMAGE_DEVICES                 ? env.DOCKER_CLOUD_IMAGE_DEVICES                          : ""
+	String dockCloudImage_labels                = env.DOCKER_CLOUD_IMAGE_LABELS                  ? env.DOCKER_CLOUD_IMAGE_LABELS                           : "my-label"
+	String dockCloudImage_name                  = env.DOCKER_CLOUD_IMAGE_IMAGE                   ? env.DOCKER_CLOUD_IMAGE_IMAGE                            : "jenkinsci/slave:latest"
+	String dockCloudImage_pullCredsId           = env.DOCKER_CLOUD_IMAGE_PULL_CREDS_ID           ? env.DOCKER_CLOUD_IMAGE_PULL_CREDS_ID                    : ""
+	String dockCloudImage_dockerCommand         = env.DOCKER_CLOUD_IMAGE_DOCKER_COMMAND          ? env.DOCKER_CLOUD_IMAGE_DOCKER_COMMAND                   : ""
+	String dockCloudImage_hostName              = env.DOCKER_CLOUD_IMAGE_HOST_NAME               ? env.DOCKER_CLOUD_IMAGE_HOST_NAME                        : ""
+	String dockCloudImage_dns                   = env.DOCKER_CLOUD_IMAGE_DNS                     ? env.DOCKER_CLOUD_IMAGE_DNS                              : ""
+	String dockCloudImage_network               = env.DOCKER_CLOUD_IMAGE_NETWORK                 ? env.DOCKER_CLOUD_IMAGE_NETWORK                          : ""
+	String dockCloudImage_volumes               = env.DOCKER_CLOUD_IMAGE_VOLUMES                 ? env.DOCKER_CLOUD_IMAGE_VOLUMES                          : ""
+	String dockCloudImage_volumesFromContainers = env.DOCKER_CLOUD_IMAGE_VOLUMES_FROM_CONTAINERS ? env.DOCKER_CLOUD_IMAGE_VOLUMES_FROM_CONTAINERS          : ""
+	String dockCloudImage_environment           = env.DOCKER_CLOUD_IMAGE_ENVIRONMENT             ? env.DOCKER_CLOUD_IMAGE_ENVIRONMENT                      : ""
+	String dockCloudImage_ports                 = env.DOCKER_CLOUD_IMAGE_PORTS                   ? env.DOCKER_CLOUD_IMAGE_PORTS                            : ""
+	Boolean dockCloudImage_bindAllPorts         = env.DOCKER_CLOUD_IMAGE_BIND_ALL_PORTS          ? env.DOCKER_CLOUD_IMAGE_BIND_ALL_PORTS.toBoolean()       : false
+	Integer dockCloudImage_memLimitMB           = env.DOCKER_CLOUD_IMAGE_MEMORY_LIMIT_MB         ? env.DOCKER_CLOUD_IMAGE_MEMORY_LIMIT_MB.toInteger()      : null
+	Integer dockCloudImage_memSwapLimitMB       = env.DOCKER_CLOUD_IMAGE_MEMORY_SWAP_LIMIT_MB    ? env.DOCKER_CLOUD_IMAGE_MEMORY_SWAP_LIMIT_MB.toInteger() : null
+	Integer dockCloudImage_cpuShares            = env.DOCKER_CLOUD_IMAGE_CPU_SHARES              ? env.DOCKER_CLOUD_IMAGE_CPU_SHARES.toInteger()           : null
+	Integer dockCloudImage_shmemSizeMB          = env.DOCKER_CLOUD_IMAGE_SHMEM_SIZE_MB           ? env.DOCKER_CLOUD_IMAGE_SHMEM_SIZE_MB.toInteger()        : null
+	Boolean dockCloudImage_privileged           = env.DOCKER_CLOUD_IMAGE_PRIVILEGED              ? env.DOCKER_CLOUD_IMAGE_PRIVILEGED.toBoolean()           : false
+	Boolean dockCloudImage_tty                  = env.DOCKER_CLOUD_IMAGE_TTY                     ? env.DOCKER_CLOUD_IMAGE_TTY.toBoolean()                  : true
+	String dockCloudImage_macAddr               = env.DOCKER_CLOUD_IMAGE_MAC_ADDR                ? env.DOCKER_CLOUD_IMAGE_MAC_ADDR                         : ""
+	String dockCloudImage_extraHosts            = env.DOCKER_CLOUD_IMAGE_EXTRA_HOSTS             ? env.DOCKER_CLOUD_IMAGE_EXTRA_HOSTS                      : ""
+	String dockCloudImage_instanceCap           = env.DOCKER_CLOUD_IMAGE_INSTANCE_CAP            ? env.DOCKER_CLOUD_IMAGE_INSTANCE_CAP                     : ""
+	String dockCloudImage_remoteFileSysRoot     = env.DOCKER_CLOUD_IMAGE_REMOTE_FILE_SYS_ROOT    ? env.DOCKER_CLOUD_IMAGE_REMOTE_FILE_SYS_ROOT             : ""
+	Integer dockCloudImage_idleTimeoutMin       = env.DOCKER_CLOUD_IMAGE_IDLE_TIMEOUT_MIN        ? env.DOCKER_CLOUD_IMAGE_IDLE_TIMEOUT_MIN.toInteger()     : 12
+	String dockCloudImage_attachUser            = env.DOCKER_CLOUD_IMAGE_ATTACH_USER             ? env.DOCKER_CLOUD_IMAGE_ATTACH_USER                      : "root"
+	Boolean dockCloudImage_removeVolumes        = env.DOCKER_CLOUD_IMAGE_REMOVE_VOLUMES          ? env.DOCKER_CLOUD_IMAGE_REMOVE_VOLUMES.toBoolean()       : false
+	String dockCloudImage_pullStrategy          = env.DOCKER_CLOUD_IMAGE_PULL_STRATEGY           ? env.DOCKER_CLOUD_IMAGE_PULL_STRATEGY                    : "PULL_ALWAYS"    // PULL_ALWAYS, PULL_LATEST, PULL_NEVER
+	Integer dockCloudImage_pullTimeoutSec       = env.DOCKER_CLOUD_IMAGE_PULL_TIMEOUT_SEC        ? env.DOCKER_CLOUD_IMAGE_PULL_TIMEOUT_SEC.toInteger()     : 10
+
+
+
+// Prepare vars:
+def dockerCloudParameters = [
+  name:             dockCloud_name,
+  serverUrl:        dockCloud_hostUrl,
+  credentialsId:    dockCloud_credsId,
+  version:          dockCloud_apiVersion,
+  connectTimeout:   dockCloud_conTimeoutSec,
+  readTimeout:      dockCloud_readTimeoutSec,
+  containerCapStr:  dockCloud_contCap,
+  dockerHostname:   dockCloud_hostName
+]
+
+
+def dockerTemplateBaseParameters = [
+  labelString:        dockCloudImage_labels,
+  image:              dockCloudImage_name,
+  pullCredentialsId:  dockCloudImage_pullCredsId,
+  dockerCommand:      dockCloudImage_dockerCommand,
+  hostname:           dockCloudImage_hostName,
+  dnsString:          dockCloudImage_dns,
+  network:            dockCloudImage_network,
+  volumesString:      dockCloudImage_volumes,
+  volumesFromString:  dockCloudImage_volumesFromContainers,
+  environmentsString: dockCloudImage_environment,
+  bindPorts:          dockCloudImage_ports,
+  bindAllPorts:       dockCloudImage_bindAllPorts,
+  memoryLimit:        dockCloudImage_memLimitMB,
+  memorySwapLimit:    dockCloudImage_memSwapLimitMB,
+  cpuShares:          dockCloudImage_cpuShares,
+  sharedMemorySize:   dockCloudImage_shmemSizeMB,
+  privileged:         dockCloudImage_privileged,
+  tty:                dockCloudImage_tty,
+  macAddress:         dockCloudImage_macAddr,
+  extraHostsString:   dockCloudImage_extraHosts,
+  instanceCapStr:     dockCloudImage_instanceCap,
+  remoteFs:           dockCloudImage_remoteFileSysRoot,
+  attachUser:           dockCloudImage_attachUser,
+]
+
+
+
+// Assignment:
+	// https://github.com/jenkinsci/docker-plugin/blob/docker-plugin-1.1.2/src/main/java/com/nirima/jenkins/plugins/docker/DockerTemplateBase.java
+DockerTemplateBase dockerTemplateBase = new DockerTemplateBase(
+  dockerTemplateBaseParameters.image,
+  dockerTemplateBaseParameters.pullCredentialsId,
+  dockerTemplateBaseParameters.dnsString,
+  dockerTemplateBaseParameters.network,
+  dockerTemplateBaseParameters.dockerCommand,
+  dockerTemplateBaseParameters.volumesString,
+  dockerTemplateBaseParameters.volumesFromString,
+  dockerTemplateBaseParameters.environmentsString,
+  dockerTemplateBaseParameters.hostname,
+  dockerTemplateBaseParameters.memoryLimit,
+  dockerTemplateBaseParameters.memorySwapLimit,
+  dockerTemplateBaseParameters.cpuShares,
+  dockerTemplateBaseParameters.sharedMemorySize,
+  dockerTemplateBaseParameters.bindPorts,
+  dockerTemplateBaseParameters.bindAllPorts,
+  dockerTemplateBaseParameters.privileged,
+  dockerTemplateBaseParameters.tty,
+  dockerTemplateBaseParameters.macAddress,
+  dockerTemplateBaseParameters.extraHostsString
+)
+
+	// https://github.com/jenkinsci/docker-plugin/blob/docker-plugin-1.1.2/src/main/java/com/nirima/jenkins/plugins/docker/DockerTemplate.java
+DockerTemplate dockerTemplate = new DockerTemplate(
+  dockerTemplateBase,
+  new DockerComputerAttachConnector(dockerTemplateBaseParameters.attachUser),
+  dockerTemplateBaseParameters.labelString,
+  dockerTemplateBaseParameters.remoteFs,
+  dockerTemplateBaseParameters.instanceCapStr
+)
+
+// Retention strategy
+dockerTemplate.setRetentionStrategy(new DockerOnceRetentionStrategy(dockCloudImage_idleTimeoutMin))
+dockerTemplate.setPullStrategy(DockerImagePullStrategy[dockCloudImage_pullStrategy])
+dockerTemplate.setPullTimeout(dockCloudImage_pullTimeoutSec)
+dockerTemplate.setRemoveVolumes(dockCloudImage_removeVolumes)
+
+	// https://github.com/jenkinsci/docker-plugin/blob/docker-plugin-1.1.2/src/main/java/com/nirima/jenkins/plugins/docker/DockerCloud.java
+DockerCloud dockerCloud = new DockerCloud(
+  dockerCloudParameters.name,
+  [dockerTemplate],
+  dockerCloudParameters.serverUrl,
+  dockerCloudParameters.containerCapStr,
+  dockerCloudParameters.connectTimeout,
+  dockerCloudParameters.readTimeout,
+  dockerCloudParameters.credentialsId,
+  dockerCloudParameters.version,
+  dockerCloudParameters.dockerHostname
+)
+
+// Check if already exists:
+if (jenkins.clouds.getByName(dockerCloudParameters.name)) {println "Removing existing docker-cloud installment: '${dockerCloudParameters.name}'"; jenkins.clouds.remove(jenkins.clouds.getByName(dockerCloudParameters.name)) }
+
+// add cloud configuration to Jenkins
+jenkins.clouds.add(dockerCloud)
+
+// save current Jenkins state to disk
+jenkins.save()
+
+
+println "--> Configuring Docker-Cloud... Done"

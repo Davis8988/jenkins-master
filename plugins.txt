@@ -3,6 +3,7 @@ active-directory
 ant
 antisamy-markup-formatter
 credentials
+docker-plugin
 extra-columns
 git-client
 git
