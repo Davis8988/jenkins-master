@@ -49,6 +49,7 @@ String dockCloudImage_macAddr               = env.DOCKER_CLOUD_IMAGE_MAC_ADDR   
 String dockCloudImage_extraHosts            = env.DOCKER_CLOUD_IMAGE_EXTRA_HOSTS             ? env.DOCKER_CLOUD_IMAGE_EXTRA_HOSTS                      : ""
 String dockCloudImage_instanceCap           = env.DOCKER_CLOUD_IMAGE_INSTANCE_CAP            ? env.DOCKER_CLOUD_IMAGE_INSTANCE_CAP                     : ""
 String dockCloudImage_remoteFileSysRoot     = env.DOCKER_CLOUD_IMAGE_REMOTE_FILE_SYS_ROOT    ? env.DOCKER_CLOUD_IMAGE_REMOTE_FILE_SYS_ROOT             : ""
+String dockCloudImage_attachUser            = env.DOCKER_CLOUD_IMAGE_ATTACH_USER             ? env.DOCKER_CLOUD_IMAGE_ATTACH_USER                      : "root"
 
 
 
@@ -89,7 +90,8 @@ def dockerTemplateBaseParameters = [
   macAddress:         dockCloudImage_macAddr,
   extraHostsString:   dockCloudImage_extraHosts,
   instanceCapStr:     dockCloudImage_instanceCap,
-  remoteFs:           dockCloudImage_remoteFileSysRoot
+  remoteFs:           dockCloudImage_remoteFileSysRoot,
+  attachUser:           dockCloudImage_attachUser,
 ]
 
 
@@ -121,7 +123,7 @@ DockerTemplateBase dockerTemplateBase = new DockerTemplateBase(
 	// https://github.com/jenkinsci/docker-plugin/blob/docker-plugin-1.1.2/src/main/java/com/nirima/jenkins/plugins/docker/DockerTemplate.java
 DockerTemplate dockerTemplate = new DockerTemplate(
   dockerTemplateBase,
-  new DockerComputerAttachConnector(),
+  new DockerComputerAttachConnector(dockerTemplateBaseParameters.attachUser),
   dockerTemplateBaseParameters.labelString,
   dockerTemplateBaseParameters.remoteFs,
   dockerTemplateBaseParameters.instanceCapStr
