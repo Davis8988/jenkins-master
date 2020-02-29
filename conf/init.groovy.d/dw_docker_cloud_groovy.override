@@ -1,0 +1,143 @@
+import java.lang.System
+import com.nirima.jenkins.plugins.docker.DockerCloud
+import com.nirima.jenkins.plugins.docker.DockerTemplate
+import com.nirima.jenkins.plugins.docker.DockerTemplateBase
+import com.nirima.jenkins.plugins.docker.launcher.AttachedDockerComputerLauncher
+import io.jenkins.docker.connector.DockerComputerAttachConnector
+import jenkins.model.Jenkins
+
+
+println "--> Configuring Docker... "
+
+
+// Init
+def env = System.getenv()
+def inst = Jenkins.getInstance()
+def artifactoryDesc = inst.getDescriptor("org.jfrog.hudson.ArtifactoryBuilder")
+
+
+
+
+String artiServ_ID                              = env.ARTIFACTORY_SERVER_ID                   ? env.ARTIFACTORY_SERVER_ID                                      : "my-artifactiory"
+String artiServ_Url                             = env.ARTIFACTORY_SERVER_URL                  ? env.ARTIFACTORY_SERVER_URL                                     : ""
+Integer artiServ_timeoutSec                     = env.ARTIFACTORY_SERVER_TIMEOUT_SEC          ? env.ARTIFACTORY_SERVER_TIMEOUT_SEC.toInteger()                 : 20
+Boolean artiServ_bypassProxy                    = env.ARTIFACTORY_SERVER_BYPASS_PROXY         ? env.ARTIFACTORY_SERVER_BYPASS_PROXY.toBoolean()                : false
+Integer artiServ_connectionRetry                = env.ARTIFACTORY_SERVER_CONNECTION_RETRY     ? env.ARTIFACTORY_SERVER_CONNECTION_RETRY.toString().toInteger() : 3
+Integer artiServ_deployThreadsCount             = env.ARTIFACTORY_SERVER_DEPLOY_THREADS_COUNT ? env.ARTIFACTORY_SERVER_DEPLOY_THREADS_COUNT.toInteger()        : 10
+CredentialsConfig artiServ_deployerCredentials  = getCredentialsConfig(env.ARTIFACTORY_SERVER_DEPLOYER_USER_ID)
+CredentialsConfig artiServ_resolverCredentials  = getCredentialsConfig(env.ARTIFACTORY_SERVER_RESOLVER_USER_ID)
+
+
+// Init params:
+//     Docker Cloud
+String dockCloud_name = env.DOCKER_CLOUD_NAME ? env.DOCKER_CLOUD_NAME : "my-local-docker-cloud"
+String dockCloud_hostUrl = env.DOCKER_CLOUD_HOST_URL ? env.DOCKER_CLOUD_HOST_URL : "unix:///var/run/docker.sock"
+String dockCloud_credsId = env.DOCKER_CLOUD_CREDS_ID ? env.DOCKER_CLOUD_CREDS_ID : ""
+String dockCloud_apiVersion = env.DOCKER_CLOUD_API_VERSION ? env.DOCKER_CLOUD_API_VERSION : ""
+Integer dockCloud_conTimeoutSec = env.DOCKER_CLOUD_CONNECTION_TIMEOUT_SEC ? env.DOCKER_CLOUD_CONNECTION_TIMEOUT_SEC.toInteger() : 4
+Integer dockCloud_readTimeoutSec = env.DOCKER_CLOUD_READ_TIMEOUT_SEC ? env.DOCKER_CLOUD_READ_TIMEOUT_SEC.toInteger() : 60
+String dockCloud_contCap = env.DOCKER_CLOUD_CONTAINER_CAP ? env.DOCKER_CLOUD_CONTAINER_CAP : 100
+String dockCloud_hostName = env.DOCKER_CLOUD_HOST_NAME ? env.DOCKER_CLOUD_HOST_NAME : ""
+
+
+
+
+def dockerCloudParameters = [
+  name:             dockCloud_name,
+  serverUrl:        dockCloud_hostUrl,
+  credentialsId:    dockCloud_credsId,
+  version:          dockCloud_apiVersion,
+  connectTimeout:   dockCloud_conTimeoutSec,
+  readTimeout:      dockCloud_readTimeoutSec,
+  containerCapStr:  dockCloud_contCap,
+  dockerHostname:   dockCloud_hostName
+]
+
+
+def dockerTemplateBaseParameters = [
+  bindAllPorts:       false,
+  bindPorts:          '',
+  cpuShares:          null,
+  dnsString:          '',
+  dockerCommand:      '',
+  environmentsString: '',
+  extraHostsString:   '',
+  hostname:           '',
+  image:              'jenkinsci/slave:latest',
+  macAddress:         '',
+  memoryLimit:        null,
+  memorySwap:         null,
+  network:            '',
+  privileged:         false,
+  pullCredentialsId:  '',
+  sharedMemorySize:   null,
+  tty:                true,
+  volumesFromString:  '',
+  volumesString:      ''
+]
+
+def DockerTemplateParameters = [
+  instanceCapStr: '4',
+  labelString:    'docker.local.jenkins.slave',
+  remoteFs:       ''
+]
+
+
+
+
+// https://github.com/jenkinsci/docker-plugin/blob/docker-plugin-1.1.2/src/main/java/com/nirima/jenkins/plugins/docker/DockerTemplateBase.java
+DockerTemplateBase dockerTemplateBase = new DockerTemplateBase(
+  dockerTemplateBaseParameters.image,
+  dockerTemplateBaseParameters.pullCredentialsId,
+  dockerTemplateBaseParameters.dnsString,
+  dockerTemplateBaseParameters.network,
+  dockerTemplateBaseParameters.dockerCommand,
+  dockerTemplateBaseParameters.volumesString,
+  dockerTemplateBaseParameters.volumesFromString,
+  dockerTemplateBaseParameters.environmentsString,
+  dockerTemplateBaseParameters.hostname,
+  dockerTemplateBaseParameters.memoryLimit,
+  dockerTemplateBaseParameters.memorySwap,
+  dockerTemplateBaseParameters.cpuShares,
+  dockerTemplateBaseParameters.sharedMemorySize,
+  dockerTemplateBaseParameters.bindPorts,
+  dockerTemplateBaseParameters.bindAllPorts,
+  dockerTemplateBaseParameters.privileged,
+  dockerTemplateBaseParameters.tty,
+  dockerTemplateBaseParameters.macAddress,
+  dockerTemplateBaseParameters.extraHostsString
+)
+
+// https://github.com/jenkinsci/docker-plugin/blob/docker-plugin-1.1.2/src/main/java/com/nirima/jenkins/plugins/docker/DockerTemplate.java
+DockerTemplate dockerTemplate = new DockerTemplate(
+  dockerTemplateBase,
+  new DockerComputerAttachConnector(),
+  DockerTemplateParameters.labelString,
+  DockerTemplateParameters.remoteFs,
+  DockerTemplateParameters.instanceCapStr
+)
+
+// https://github.com/jenkinsci/docker-plugin/blob/docker-plugin-1.1.2/src/main/java/com/nirima/jenkins/plugins/docker/DockerCloud.java
+DockerCloud dockerCloud = new DockerCloud(
+  dockerCloudParameters.name,
+  [dockerTemplate],
+  dockerCloudParameters.serverUrl,
+  dockerCloudParameters.containerCapStr,
+  dockerCloudParameters.connectTimeout,
+  dockerCloudParameters.readTimeout,
+  dockerCloudParameters.credentialsId,
+  dockerCloudParameters.version,
+  dockerCloudParameters.dockerHostname
+)
+
+// get Jenkins instance
+Jenkins jenkins = Jenkins.getInstance()
+
+// add cloud configuration to Jenkins
+jenkins.clouds.add(dockerCloud)
+
+// save current Jenkins state to disk
+jenkins.save()
+
+
+println "--> Configuring Docker... done"
