@@ -7,7 +7,7 @@ services:
       - '8080:8080'
       - '50000:50000'
     environment:
-      - ARTIFACTORY_SERVER_ID="hello world"
+      - "ARTIFACTORY_SERVER_ID=hello world"
       - ARTIFACTORY_SERVER_URL=https://servername:8443/artifactory00000
       - ARTIFACTORY_SERVER_DEPLOYER_USER_ID=rebuilder
       - ARTIFACTORY_SERVER_RESOLVER_USER_ID=rebuilder
