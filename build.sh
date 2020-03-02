@@ -5,9 +5,6 @@ echo [Info] Building jenkins-master image
 
 echo [Info] Getting new code:
 git pull
-
-echo [Info] Setting permissions to ./build.sh
-chmod +x build.sh
  
 echo [Info] Building image:
 docker build -t davis8988/jenkins-master . 
