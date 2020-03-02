@@ -4,6 +4,7 @@ ant
 antisamy-markup-formatter
 credentials
 docker-plugin
+docker-swarm
 extra-columns
 git-client
 git
