@@ -4,7 +4,6 @@ shouldPush=$1
 echo [Info] Building jenkins-master image
 
 echo [Info] Getting new code:
-git checkout configure/users
 git pull
 
 echo [Info] Setting permissions to ./build.sh
