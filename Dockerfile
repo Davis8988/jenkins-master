@@ -1,5 +1,5 @@
 # This dockerfile configures jenkins master image
-FROM artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7
+FROM artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.222.4-lts
 
 LABEL Description="This image is for running jenkins master server as a container"
 LABEL maintainer="yair.david@elbitsystems.com"
