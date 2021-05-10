@@ -25,7 +25,7 @@ services:
   #   volumes:
   #     - ./shared_jenkins_common_dir:/jenkins-common
   #   restart: unless-stopped
-  #   command: ["-p", "-u", "user;MyPass1234", "-s", "jenkins_shared;/shared;yes;no;yes;all;user;all;Jenkins servers common data. For plugins, Jobs and more"]
+  #   command: ["-p", "-u", "user;Abcd1234", "-s", "jenkins_shared;/shared;yes;no;yes;all;user;all;Jenkins servers common data. For plugins, Jobs and more"]
   #   ports:
   #     - "139:139"
   #     - "445:445"

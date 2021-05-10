@@ -8,7 +8,7 @@ def instance = Jenkins.getInstance()
 
 logger.info("Creating admin user")
 
-String password = env.JENKINS_ADMIN_PASSWORD ?: "MyPass1234"
+String password = env.JENKINS_ADMIN_PASSWORD ?: "Abcd1234"
 
 def hudsonRealm = new HudsonPrivateSecurityRealm(false)
 hudsonRealm.createAccount("admin", password)

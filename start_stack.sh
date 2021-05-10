@@ -27,6 +27,6 @@ echo Creating required dirs:
 for i in /jenkins-common/shared $(pwd)/containers-data; do echo Creating dir: $i && mkdir -p $i && chmod -R 777 $i; done
 
 echo Executing: docker-compose up -d
-JENKINS_ADMIN_PASSWORD=MyPass1234 docker-compose up -d 
+JENKINS_ADMIN_PASSWORD=Abcd1234 docker-compose up -d 
 
 echo Done
