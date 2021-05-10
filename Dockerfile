@@ -50,4 +50,5 @@ COPY expanding_image/scriptApproval.xml.override /usr/share/jenkins/ref/scriptAp
 
 # Pre-approve the seed job
 # RUN /tmp/compute-seed-job-hash.sh /usr/share/jenkins/ref/jobs/seed-job/workspace/job.groovy.override /usr/share/jenkins/ref/scriptApproval.xml.override
+RUN echo /usr/share/jenkins/ref/plugins/ && ls -l /usr/share/jenkins/ref/plugins/
 
