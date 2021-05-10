@@ -21,6 +21,7 @@ def pluginManager = instance.getPluginManager()
 
 def users = [
   new UserDefinition('builder', '12345678', 'example@example.com'),
+  new UserDefinition('rebuilder', '12345678', 'example@example.com'),
 ]
 def permissions = [
   Permission.fromId("hudson.model.Hudson.Read"),
