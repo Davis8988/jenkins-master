@@ -9,9 +9,10 @@ LABEL maintainer="yair.david@elbitsystems.com"
 
 
 # Set JENKINS_UC to artifactory to enable download of plugins
-ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"  \
-    JENKINS_UC="http://artifactory.esl.corp.elbit.co.il/artifactory/jenkins_update/current/update-center.json" \
-    JENKINS_UC_DOWNLOAD="http://updates.jenkins-ci.org/download"
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false" 
+// ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"  \
+    // JENKINS_UC="http://artifactory.esl.corp.elbit.co.il/artifactory/jenkins_update/current/update-center.json" \
+    // JENKINS_UC_DOWNLOAD="http://updates.jenkins-ci.org/download"
     # HTTPS_PROXY=${httpProxy} \
     # https_proxy=${httpProxy} \
     # HTTP_PROXY=${httpProxy} \
