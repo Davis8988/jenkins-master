@@ -46,9 +46,9 @@ COPY expanding_image/scriptApproval.xml /usr/share/jenkins/ref/scriptApproval.xm
 # COPY expanding_image/compute-seed-job-hash.sh /tmp/
 COPY expanding_image/conjur/ /tmp/conjur
 
-USER root
-RUN keytool -storepass $KEYTOOL_PASSWORD -import -noprompt -alias elbit -keystore  $JAVA_HOME/jre/lib/security/cacerts -file /tmp/conjur/conjur_ca_sub.crt
-USER jenkins
+# USER root
+# RUN keytool -storepass $KEYTOOL_PASSWORD -import -noprompt -alias elbit -keystore  $JAVA_HOME/jre/lib/security/cacerts -file /tmp/conjur/conjur_ca_sub.crt
+# USER jenkins
 
 # Must switch to root in order to update /etc/hosts file
 # USER root
