@@ -24,12 +24,15 @@ ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
 
 
 # Copy plugins.txt file:
-COPY expanding_image/jenkins_plugins/plugins.txt /usr/share/jenkins/ref/plugins.txt
+# COPY expanding_image/jenkins_plugins/plugins.txt /usr/share/jenkins/ref/plugins.txt
+
+# Install plugins from .hpi files
+COPY --chown=jenkins:jenkins expanding_image/jenkins_plugins/offline-plugins-files/ /usr/share/jenkins/ref/plugins/
 
 # Install Plugins using script: /usr/local/bin/install-plugins.sh
 #   When building use flag: --add-host 
 #    exmaple: docker build -t nteptartifact:5014/jenkins:configured --add-host=nteptartifact:10.0.50.49 --add-host=updates.jenkins-ci.org:10.0.50.49 .
-RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
+# RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 
 
 # Copy files needed in the container
