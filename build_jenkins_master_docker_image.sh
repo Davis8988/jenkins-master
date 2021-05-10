@@ -1,7 +1,7 @@
 
 # This script builds Jenkins Master Configured Docker Image
 
-DOCKER_IMAGE_TAG=artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7-configured
+DOCKER_IMAGE_TAG=artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.222.4-lts-configured
 BUILD_COMMAND_OPTS=$1
 DOCKER_FILE=Dockerfile
 
