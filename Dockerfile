@@ -7,7 +7,6 @@ LABEL maintainer="yair.david@elbitsystems.com"
 #  ARG httpProxy
 #  ARG noProxy
 
-
 # Set JENKINS_UC to artifactory to enable download of plugins
 ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false" 
 # ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"  \
@@ -21,6 +20,10 @@ ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
     # FTP_PROXY=${httpProxy} \
     # NO_PROXY=${noProxy} \
     # no_proxy=${noProxy}
+
+
+# Copy apt-get sources:
+COPY apt_sources/apt/ /etc/apt
 
 
 # Copy plugins.txt file:
