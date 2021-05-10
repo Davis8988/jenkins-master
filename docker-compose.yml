@@ -57,8 +57,9 @@ services:
     networks:
       - jenkins-net
     environment:
-      - JENKINS_NAME="IOS Jenkins"
-      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - JENKINS_NAME=IOS
+      - WIN_SLAVES_NAMES_STR=WIN10SLAVE03;IOS_SERVER
+      - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50015
       - SMTP_HOST=10.0.50.249
@@ -91,8 +92,9 @@ services:
     networks:
       - jenkins-net
     environment:
-      - JENKINS_NAME="InterOp Jenkins"
-      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - WIN_SLAVES_NAMES_STR=ONESIMBUILD
+      - JENKINS_NAME=InterOp
+      - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50044
       - SMTP_HOST=10.0.50.249
@@ -123,9 +125,10 @@ services:
     networks:
       - jenkins-net
     environment:
-      - JENKINS_NAME="IG Jenkins"
-      - SWARM_1_DOCKER_CLOUD_IMAGES="artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7-configured"
-      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - WIN_SLAVES_NAMES_STR=WIN7SLAVE03;WIN10SLAVE01
+      - JENKINS_NAME=IG
+      # - SWARM_1_DOCKER_CLOUD_IMAGES="simcore-rhel-74-x32-boost-1.71:artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/jenkins-slave:rhel-74-simcore-x32-boost-1.71;simcore-rhel-74-x64-boost-1.71:artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/jenkins-slave:rhel-74-simcore-x64-boost-1.71;simcore-rhel-74-x32-boost-1.73:artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/jenkins-slave:rhel-74-simcore-x32-boost-1.73;simcore-rhel-74-x64-boost-1.73:artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/jenkins-slave:rhel-74-simcore-x64-boost-1.73"
+      - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50011
       - SMTP_HOST=10.0.50.249
@@ -156,8 +159,9 @@ services:
     networks:
       - jenkins-net
     environment:
-      - JENKINS_NAME="Grafana-MongoDB Jenkins"
-      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - WIN_SLAVES_NAMES_STR=WIN7SLAVE05;LAND-BUILDSERVER
+      - JENKINS_NAME=Grafana-MongoDB
+      - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50035
       - SMTP_HOST=10.0.50.249
@@ -165,14 +169,14 @@ services:
     labels:
       org.label-schema.group: "jenkins-master"
       
-  jenkins-site-management:
+  jenkins-sitemanagement:
     image: artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7-configured
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "5"
-    container_name: jenkins-master-site-management
+    container_name: jenkins-master-sitemanagement
     volumes:
       - ./containers-data/site-management/jenkins_home:/var/jenkins_home
       - ./containers-data/shared_jenkins_common_dir:/mnt/jenkins-common/shared
@@ -187,9 +191,10 @@ services:
       retries: 5
     networks:
       - jenkins-net
-    environment:
-      - JENKINS_NAME="SiteManagement Jenkins"
-      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+    environment:  
+      - WIN_SLAVES_NAMES_STR=WIN7SLAVE01
+      - JENKINS_NAME=SiteManagement
+      - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50305
       - SMTP_HOST=10.0.50.249
@@ -220,8 +225,9 @@ services:
     networks:
       - jenkins-net
     environment:
-      - JENKINS_NAME="SimEngine Jenkins"
-      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - WIN_SLAVES_NAMES_STR=WIN7SLAVE04;SE-BUILDSERVER
+      - JENKINS_NAME=SimEngine
+      - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50444
       - SMTP_HOST=10.0.50.249
@@ -252,8 +258,9 @@ services:
     networks:
       - jenkins-net
     environment:
-      - JENKINS_NAME="OneCGF Jenkins"
-      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - WIN_SLAVES_NAMES_STR=WIN7SLAVE02;WIN7SLAVE06
+      - JENKINS_NAME=OneCGF
+      - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50001
       - SMTP_HOST=10.0.50.249
