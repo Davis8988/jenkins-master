@@ -41,7 +41,7 @@ COPY --chown=jenkins:jenkins expanding_image/jenkins_plugins/offline-plugins-fil
 # Copy files needed in the container
 COPY expanding_image/init.groovy.d/* /usr/share/jenkins/ref/init.groovy.d/
 # COPY expanding_image/seed-job/ /usr/share/jenkins/ref/jobs/seed-job
-# COPY expanding_image/scriptApproval.xml.override /usr/share/jenkins/ref/scriptApproval.xml.override
+COPY expanding_image/scriptApproval.xml /usr/share/jenkins/ref/scriptApproval.xml
 # COPY expanding_image/compute-seed-job-hash.sh /tmp/
 
 
