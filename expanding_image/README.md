@@ -64,17 +64,37 @@ SONAR_SERVER_TOKEN | Name of secret-text credentials type. Used as server authen
 2. Locate the file `job.groovy.override` and add your repository to the list of `projectDefinitions`.
 
 
-## How to add a plugin
+## How to add a plugins
 
-Just modify the file `plugins.txt` file. See also https://github.com/jenkinsci/docker#preinstalling-plugins for more
+1. Just modify the file `plugins.txt` file. See also https://github.com/jenkinsci/docker#preinstalling-plugins for more
 information.
 
-
-### How to build locally
-
-```sh
-mvn clean install -Plocal
+2. Another way:  
+	Download all matching plugins:  
+	
+	* Execute this groovy script at 'http://jenkinsServer:8080/script'  
+	```groovy
+	import jenkins.model.Jenkins
+	def instance = Jenkins.instance
+	instance.setCrumbIssuer(null)
+	```
+	* Then write your plugins to a file: `plugins.txt` with content in the format of: '{pluginName}@current' in each line. Example:  
+	```text
+	ant@current
+	antisamy-markup-formatter@current
+	bouncycastle-api@current
+	build-metrics@current
 ```
+	
+	* Then start your jenkins master server with the desired version and execute this script to tell it to download the plugins:  
+	```bat
+	for /f %%a in (plugins.txt) do (
+		echo Executing: curl --verbose --location --insecure --request POST --data "<jenkins><install plugin='%%a' /></jenkins>" --user "admin":"admin" --header "Content-Type: text/xml" --url "http://localhost:8080/pluginManager/installNecessaryPlugins"
+		curl --verbose --location --insecure --request POST --data "<jenkins><install plugin='%%a' /></jenkins>" --user "admin":"admin" --header "Content-Type: text/xml" --url "http://localhost:8080/pluginManager/installNecessaryPlugins"
+	)
+	```
+
+### 
 
 
 ## Literature
