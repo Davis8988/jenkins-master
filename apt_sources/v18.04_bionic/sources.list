@@ -1,0 +1,10 @@
+deb http://10.0.50.49:8081/artifactory/Remote_debian_DMZ_il bionic-backports main restricted universe multiverse
+deb http://10.0.50.49:8081/artifactory/Remote_debian_DMZ_il bionic main restricted
+deb http://10.0.50.49:8081/artifactory/Remote_debian_DMZ_il bionic-updates main restricted
+deb http://10.0.50.49:8081/artifactory/Remote_debian_DMZ_il bionic universe
+deb http://10.0.50.49:8081/artifactory/Remote_debian_DMZ_il bionic-updates universe
+deb http://10.0.50.49:8081/artifactory/Remote_debian_DMZ_il bionic multiverse
+deb http://10.0.50.49:8081/artifactory/Remote_debian_DMZ_il bionic-updates multiverse
+deb http://10.0.50.49:8081/artifactory/Remote_debian_security_DMZ bionic -security main restricted
+deb http://10.0.50.49:8081/artifactory/Remote_debian_security_DMZ bionic -security multiverse
+deb http://10.0.50.49:8081/artifactory/Remote_debian_security_DMZ bionic -security universe

@@ -1,0 +1,14 @@
+# Container Data Dir
+containers-data/
+
+# IntelliJ
+.idea/
+
+# dockerfiles data files
+dockerfiles/expanding_image
+
+# Offline Plugins Files
+expanding_image/jenkins_plugins/offline-plugins-files/
+
+# Conjur certificates
+*.crt

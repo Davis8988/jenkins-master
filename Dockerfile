@@ -1,24 +1,61 @@
-FROM jenkins/jenkins:2.194-slim
+# This dockerfile configures jenkins master image
+FROM artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.222.4-lts
 
-# define JVM options
-ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
+LABEL Description="This image is for running jenkins master server as a container"
+LABEL maintainer="yair.david@elbitsystems.com"
 
-USER jenkins
+#  ARG httpProxy
+#  ARG noProxy
+ARG KEYTOOL_PASSWORD
 
-# install jenkins plugins
-COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
+# Set JENKINS_UC to artifactory to enable download of plugins
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false" 
+# ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"  \
+    # JENKINS_UC="http://artifactory.esl.corp.elbit.co.il/artifactory/jenkins_update/current/update-center.json" \
+    # JENKINS_UC_DOWNLOAD="http://updates.jenkins-ci.org/download"
+    # HTTPS_PROXY=${httpProxy} \
+    # https_proxy=${httpProxy} \
+    # HTTP_PROXY=${httpProxy} \
+    # http_proxy=${httpProxy} \
+    # ftp_proxy=${httpProxy} \
+    # FTP_PROXY=${httpProxy} \
+    # NO_PROXY=${noProxy} \
+    # no_proxy=${noProxy}
 
-# Copy jenkins jobs
-# COPY jobs-configs/1-github-seed-job.xml      /usr/share/jenkins/ref/jobs/1-github-seed-job/config.xml
-COPY jobs-configs/MyTestingJob.xml           /usr/share/jenkins/ref/jobs/MyDir/MyTestingJob/config.xml
 
-# copy jenkins configuration
-COPY conf/init.groovy.d /usr/share/jenkins/ref/init.groovy.d
-COPY seeds/jobs  /usr/share/jenkins/ref/jobs
-COPY seeds/views /usr/share/jenkins/ref/views
+# Copy apt-get sources:
+COPY apt_sources/apt/ /etc/apt
 
-# SSH Keys & Credentials
-COPY conf/credentials/credentials.xml      /usr/share/jenkins/ref/credentials.xml
-COPY conf/credentials/ssh-keys/cd-demo     /usr/share/jenkins/ref/.ssh/id_rsa
-COPY conf/credentials/ssh-keys/cd-demo.pub /usr/share/jenkins/ref/.ssh/id_rsa.pub
+
+# Copy plugins.txt file:
+# COPY expanding_image/jenkins_plugins/plugins.txt /usr/share/jenkins/ref/plugins.txt
+
+# Install plugins from .hpi files
+COPY --chown=jenkins:jenkins expanding_image/jenkins_plugins/offline-plugins-files/ /usr/share/jenkins/ref/plugins/
+
+# Install Plugins using script: /usr/local/bin/install-plugins.sh
+#   When building use flag: --add-host 
+#    exmaple: docker build -t nteptartifact:5014/jenkins:configured --add-host=nteptartifact:10.0.50.49 --add-host=updates.jenkins-ci.org:10.0.50.49 .
+# RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
+
+
+# Copy files needed in the container
+COPY expanding_image/init.groovy.d/* /usr/share/jenkins/ref/init.groovy.d/
+# COPY expanding_image/seed-job/ /usr/share/jenkins/ref/jobs/seed-job
+COPY expanding_image/scriptApproval.xml /usr/share/jenkins/ref/scriptApproval.xml
+# COPY expanding_image/compute-seed-job-hash.sh /tmp/
+COPY expanding_image/conjur/ /tmp/conjur
+
+# USER root
+# RUN keytool -storepass $KEYTOOL_PASSWORD -import -noprompt -alias elbit -keystore  $JAVA_HOME/jre/lib/security/cacerts -file /tmp/conjur/conjur_ca_sub.crt
+# USER jenkins
+
+# Must switch to root in order to update /etc/hosts file
+# USER root
+# Add nteptartifact and updates.jenkins-ci.org (10.0.50.49)
+# RUN echo 10.0.50.49   nteptartifact >> /etc/hosts; echo 10.0.50.49   updates.jenkins-ci.org >> /etc/hosts
+
+
+# Pre-approve the seed job
+# RUN /tmp/compute-seed-job-hash.sh /usr/share/jenkins/ref/jobs/seed-job/workspace/job.groovy.override /usr/share/jenkins/ref/scriptApproval.xml.override
+

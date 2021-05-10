@@ -1,0 +1,63 @@
+import java.util.logging.Logger
+import jenkins.model.*
+import hudson.security.*
+
+// Init
+def logger = Logger.getLogger("")
+def env = System.getenv()
+def instance = Jenkins.getInstance()
+def smtpHost = env.SMTP_HOST
+def smtpPort = env.SMTP_PORT
+
+def mailer = instance.getDescriptor("hudson.tasks.Mailer")
+def emailExt = instance.getDescriptor("hudson.plugins.emailext.ExtendedEmailPublisher")
+
+if (mailer) {
+    // More conf:
+    //  mailer.setSmtpAuth(user, pass)
+    //  mailer.setReplyToAddress(...)
+    //  mailer.setUseSsl(...)
+
+    mailer.setCharset("UTF-8")
+    if (env.SMTP_CHARSET) {
+        mailer.setCharset(env.SMTP_CHARSET)
+    }
+
+    if (smtpHost) {
+        mailer.setSmtpHost(smtpHost)
+    }
+
+    if (smtpPort) {
+        mailer.setSmtpPort(smtpPort)
+    }
+
+    mailer.save()
+    instance.save()
+} else {
+  logger.info("The 'mailer' plugin is not installed; skipping mail server configuration")
+}
+
+if (emailExt) {
+    // This method below is not documented in Javadoc, but can be found here:
+    // https://github.com/jenkinsci/email-ext-plugin/blob/master/src/main/java/hudson/plugins/emailext/ExtendedEmailPublisherDescriptor.java#L546
+    emailExt.setAllowUnregisteredEnabled(true)
+    emailExt.setDefaultContentType("text/html")
+    emailExt.charset="UTF-8"
+
+    if (env.SMTP_CHARSET) {
+        emailExt.charset=env.SMTP_CHARSET
+    }
+
+    if (smtpHost) {
+        emailExt.smtpHost = smtpHost
+    }
+
+    if (smtpPort) {
+        emailExt.smtpPort=smtpPort
+    }
+
+    emailExt.save()
+    instance.save()
+} else {
+  logger.info("The 'email-ext' plugin is not installed; skipping extended-mail server configuration")
+}
