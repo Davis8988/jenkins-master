@@ -124,6 +124,7 @@ services:
       - jenkins-net
     environment:
       - JENKINS_NAME="IG Jenkins"
+      - SWARM_1_DOCKER_CLOUD_IMAGES="artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7-configured"
       - JENKINS_ADMIN_EMAIL="admin@admin.com"
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50011

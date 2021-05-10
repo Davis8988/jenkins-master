@@ -31,6 +31,7 @@ def launcher = null  // Default is by connecting it to the master
 
 slavesNamesStr = ""
 slavesNamesList.each {slaveName ->
+	slaveName = slaveName.trim()
 	slavesNamesStr += "\n${slaveName}"
 	// Define a "Permanent Agent"
 	Slave agent = new DumbSlave(

@@ -13,6 +13,12 @@ import jenkins.model.Jenkins
 import org.jenkinsci.plugins.docker.commons.credentials.DockerServerEndpoint
 
 
+/**
+	Set env: 'SWARM_1_DOCKER_CLOUD_IMAGES' for controlling creation of slaves nodes
+	Example: env.SWARM_1_DOCKER_CLOUD_IMAGES = "david:image; hello:some; now:never"
+*/
+
+
 /////////////////////////////////////////////////////////////////////////////
 // Parameters in this script are placed in groovy maps.
 // Most parameters are strings in 'single quotes'.
@@ -28,157 +34,169 @@ def logger = Logger.getLogger("")
 def env = System.getenv()
 
 String nimbusSwarmDockerAddress = 'tcp://11.0.118.60:2375'
+logger.info("Configuring Docker Nimbus Swarm 1 Cloud. Looking for env: SWARM_1_DOCKER_CLOUD_IMAGES")
+String swarmDockerCloudImagesStr = env.SWARM_1_DOCKER_CLOUD_IMAGES
+if (! swarmDockerCloudImagesStr) {logger.info("Skipping configure of Docker Nimbus Swarm 1 Cloud env: 'SWARM_1_DOCKER_CLOUD_IMAGES' is missing"); return}
 
-logger.info("Configuring Docker Nimbus Swarm 1 Cloud. Looking for env: SWARM_1_DOCKER_CLOUD_IMAGE")
-String swarmDockerCloudImage = env.SWARM_1_DOCKER_CLOUD_IMAGE
-if (! swarmDockerCloudImage) {logger.info("Skipping configure of Docker Nimbus Swarm 1 Cloud env: 'SWARM_1_DOCKER_CLOUD_IMAGE' is missing"); return}
+String [] swarmDockerCloudImages = swarmDockerCloudImagesStr.split(";")
+swarmDockerCloudImages.each {swarmDockerCloudImage ->
+	swarmDockerCloudImageArr = swarmDockerCloudImage.split(":")
+	String slaveName = swarmDockerCloudImageArr[0].trim()
+	String dockerImage = swarmDockerCloudImageArr[1].trim()
+	
+	// Parameters listed here are used to create a
+	// https://github.com/jenkinsci/docker-plugin/blob/master/src/main/java/com/nirima/jenkins/plugins/docker/DockerTemplateBase.java
+	def templateBaseParameters = [
+	  // image is mandatory param: use 'jenkins/agent:latest' if unsure.
+	  image:                       dockerImage,
+	  // all other parameters are optional
+	  // Uncomment them if you want to set them.
+	  // bindAllPorts:             false,
+	  // bindPorts:                '',
+	  // capabilitiesToAddString:  '',
+	  // capabilitiesToDropString: '',
+	  // cpuPeriod:                (Long)null,
+	  // cpuQuota:                 (Long)null,
+	  // cpuShares:                (Integer)null,
+	  // devicesString:            '',
+	  // dnsString:                '',
+	  // dockerCommand:            '',
+	  // environmentsString:       '',
+	  // extraDockerLabelsString:  '',
+	  // extraGroupsString:        '',
+	  // extraHostsString:         '',
+	  // hostname:                 '',
+	  // macAddress:               '',
+	  // memoryLimit:              (Integer)null,
+	  // memorySwap:               (Integer)null,
+	  // network:                  '',
+	  privileged:               true,
+	  // pullCredentialsId:        '',
+	  // securityOptsString:       '',
+	  // shmSize:                  (Integer)null,
+	  //tty:                         true,
+	  // user:                     '',
+	  volumes:             ['/var/run/docker.sock:/var/run/docker.sock'],
+	  // volumesFromString:        '/var/run/docker.sock:/var/run/docker.sock',
+	]
 
+	// Parameters listed here are used to create a
+	// https://github.com/jenkinsci/docker-plugin/blob/master/src/main/java/com/nirima/jenkins/plugins/docker/DockerTemplate.java
+	def templateParameters = [
+	  // all parameters except name, remoteFs and labelString are optional
+	  disabled:                 false,
+	  // instanceCapStr:           '4',
+	  labelString:                 slaveName,
+	  // mode:                     hudson.model.Node.Mode.NORMAL,
+	  name:                        slaveName,
+	  // pullStrategy:             DockerImagePullStrategy.PULL_LATEST,
+	  pullTimeout:                 300,
+	  remoteFs:                    '/home/jenkins/agent',
+	  removeVolumes:               true,
+	  // stopTimeout:              10,
+	]
 
+	// Parameters listed here are used to create a
+	// https://github.com/jenkinsci/docker-plugin/blob/master/src/main/java/io/jenkins/docker/client/DockerAPI.java
+	// and
+	// https://github.com/jenkinsci/docker-plugin/blob/master/src/main/java/com/nirima/jenkins/plugins/docker/DockerCloud.java
+	 def cloudParameters = [
+	  // serverUrl and name are required.
+	  // everything else is optional
+	  serverUrl:                   nimbusSwarmDockerAddress,
+	  name:                        'nimbus-swarm-1',
+	  containerCap:                10, // 0 means no cap
+	  // credentialsId:            '',
+	  connectTimeout:              5,
+	  readTimeout:                 60,
+	  // version:                  '',
+	  // dockerHostname:           '',
+	  // exposeDockerHost:         false,
+	  // disabled:                 false,
+	  // errorDuration:            (Integer)null,
+	]
 
-// Parameters listed here are used to create a
-// https://github.com/jenkinsci/docker-plugin/blob/master/src/main/java/com/nirima/jenkins/plugins/docker/DockerTemplateBase.java
-def templateBaseParameters = [
-  // image is mandatory param: use 'jenkins/agent:latest' if unsure.
-  image:                       swarmDockerCloudImage,
-  // all other parameters are optional
-  // Uncomment them if you want to set them.
-  // bindAllPorts:             false,
-  // bindPorts:                '',
-  // capabilitiesToAddString:  '',
-  // capabilitiesToDropString: '',
-  // cpuPeriod:                (Long)null,
-  // cpuQuota:                 (Long)null,
-  // cpuShares:                (Integer)null,
-  // devicesString:            '',
-  // dnsString:                '',
-  // dockerCommand:            '',
-  // environmentsString:       '',
-  // extraDockerLabelsString:  '',
-  // extraGroupsString:        '',
-  // extraHostsString:         '',
-  // hostname:                 '',
-  // macAddress:               '',
-  // memoryLimit:              (Integer)null,
-  // memorySwap:               (Integer)null,
-  // network:                  '',
-  privileged:               true,
-  // pullCredentialsId:        '',
-  // securityOptsString:       '',
-  // shmSize:                  (Integer)null,
-  //tty:                         true,
-  // user:                     '',
-  volumes:             ['/var/run/docker.sock:/var/run/docker.sock'],
-  // volumesFromString:        '/var/run/docker.sock:/var/run/docker.sock',
-]
+	/////////////////////////////////////////////////////////////////////////////
+	// The code above defines our data.
+	// Now to turn that raw data into objects used by the
+	// docker-plugin code...
+	/////////////////////////////////////////////////////////////////////////////
 
-// Parameters listed here are used to create a
-// https://github.com/jenkinsci/docker-plugin/blob/master/src/main/java/com/nirima/jenkins/plugins/docker/DockerTemplate.java
-def templateParameters = [
-  // all parameters except name, remoteFs and labelString are optional
-  disabled:                 false,
-  // instanceCapStr:           '4',
-  labelString:                 'nimbus-swarm-1',
-  // mode:                     hudson.model.Node.Mode.NORMAL,
-  name:                        'nimbus-swarm-1',
-  // pullStrategy:             DockerImagePullStrategy.PULL_LATEST,
-  pullTimeout:                 300,
-  remoteFs:                    '/home/jenkins/agent',
-  removeVolumes:               true,
-  // stopTimeout:              10,
-]
+	DockerTemplateBase templateBase = new DockerTemplateBase(templateBaseParameters.image)
+	// println templateBase.properties
+	// .sort{it.key}
+	// .collect{it}
+	// .findAll{!['class', 'active'].contains(it.key)}
+	// .join('\n')
+	// println "Done"
+	templateBaseParameters.findAll{ it.key != "image" }.each { k, v ->
+	  templateBase."$k" = v
+	}
+	DockerComputerConnector computerConnector = new DockerComputerAttachConnector()
+	Set<String> templateParametersHandledSpecially = [ 'labelString', 'instanceCapStr' ]
+	DockerTemplate template = new DockerTemplate(
+	  templateBase,
+	  computerConnector,
+	  templateParameters.labelString,
+	  templateParameters.instanceCapStr
+	)
+	templateParameters.findAll{ !templateParametersHandledSpecially.contains(it.key) }.each { k, v ->
+	  if ( k=="disabled" ) {
+		DockerDisabled dd = new DockerDisabled()
+		dd.disabledByChoice = v
+		template."$k" = dd
+	  } else {
+		template."$k" = v
+	  }
+	}
 
-// Parameters listed here are used to create a
-// https://github.com/jenkinsci/docker-plugin/blob/master/src/main/java/io/jenkins/docker/client/DockerAPI.java
-// and
-// https://github.com/jenkinsci/docker-plugin/blob/master/src/main/java/com/nirima/jenkins/plugins/docker/DockerCloud.java
- def cloudParameters = [
-  // serverUrl and name are required.
-  // everything else is optional
-  serverUrl:                   nimbusSwarmDockerAddress,
-  name:                        'nimbus-swarm-1',
-  containerCap:                10, // 0 means no cap
-  // credentialsId:            '',
-  connectTimeout:              5,
-  readTimeout:                 60,
-  // version:                  '',
-  // dockerHostname:           '',
-  // exposeDockerHost:         false,
-  // disabled:                 false,
-  // errorDuration:            (Integer)null,
-]
+	// Check if cloud already exists:
+	Cloud existingCloud = instance.clouds.getByName(cloudParameters.name)
+	if ( existingCloud ) {
+		// Check if a template with this label already exists:
+		List<DockerTemplate> existingTemplatesList = existingCloud.getTemplates()
+		Boolean templateAlreadyExists = false
+		existingTemplatesList.each {existingTemplate ->
+			String existingTemplateLabel = existingTemplate.getLabelString()
+			if (existingTemplateLabel.equalsIgnoreCase(templateParameters.labelString)) {templateAlreadyExists  = true; return}
+		}
+		if (templateAlreadyExists) {println "Skipping adding of template: '${templateParameters.labelString}' to Cloud: ${cloudParameters.name} since that cloud already has this template: '${templateParameters.labelString}'"; return}
+		println("Cloud: ${cloudParameters.name} already exists - Adding Docker Template: '${slaveName}:${dockerImage}'  to it")
+		existingCloud.addTemplate(template)
+		return
+	}
+	
+	Set<String> cloudParametersHandledSpecially = [ 'serverUrl', 'credentialsId' ,'serverUrl' ,'credentialsId' ,'connectTimeout' ,'readTimeout' ,'version' ,'connectTimeout' ,'dockerHostname' ,'name' ]
+	DockerAPI api = new DockerAPI(new DockerServerEndpoint(cloudParameters.serverUrl, cloudParameters.credentialsId))
+	api.with {
+	  connectTimeout = cloudParameters.connectTimeout
+	  readTimeout = cloudParameters.readTimeout
+	  apiVersion = cloudParameters.version
+	  hostname = cloudParameters.dockerHostname
+	}
+	DockerCloud newCloud = new DockerCloud(
+	  cloudParameters.name,
+	  api,
+	  [template]
+	)
+	cloudParameters.findAll{!cloudParametersHandledSpecially.contains(it.key)}.each { k, v ->
+	  if ( k=="disabled" ) {
+		DockerDisabled dd = new DockerDisabled()
+		dd.disabledByChoice = v
+		newCloud."$k" = dd
+	  } else {
+		newCloud."$k" = v
+	  }
+	}
 
-/////////////////////////////////////////////////////////////////////////////
-// The code above defines our data.
-// Now to turn that raw data into objects used by the
-// docker-plugin code...
-/////////////////////////////////////////////////////////////////////////////
-
-DockerTemplateBase templateBase = new DockerTemplateBase(templateBaseParameters.image)
-// println templateBase.properties
-// .sort{it.key}
-// .collect{it}
-// .findAll{!['class', 'active'].contains(it.key)}
-// .join('\n')
-// println "Done"
-templateBaseParameters.findAll{ it.key != "image" }.each { k, v ->
-  templateBase."$k" = v
+	// add/replace cloud configuration to Jenkins
+	// Cloud existingCloud = instance.clouds.getByName(cloudParameters.name)
+	// if ( existingCloud ) {
+	  // instance.clouds.remove(existingCloud)
+	// }
+	println("Adding Cloud: '${cloudParameters.name}' with template: ${slaveName}:${dockerImage}")
+	instance.clouds.add(newCloud)
 }
-DockerComputerConnector computerConnector = new DockerComputerAttachConnector()
-Set<String> templateParametersHandledSpecially = [ 'labelString', 'instanceCapStr' ]
-DockerTemplate template = new DockerTemplate(
-  templateBase,
-  computerConnector,
-  templateParameters.labelString,
-  templateParameters.instanceCapStr
-)
-templateParameters.findAll{ !templateParametersHandledSpecially.contains(it.key) }.each { k, v ->
-  if ( k=="disabled" ) {
-    DockerDisabled dd = new DockerDisabled()
-    dd.disabledByChoice = v
-    template."$k" = dd
-  } else {
-    template."$k" = v
-  }
-}
-
-Set<String> cloudParametersHandledSpecially = [ 'serverUrl', 'credentialsId' ,'serverUrl' ,'credentialsId' ,'connectTimeout' ,'readTimeout' ,'version' ,'connectTimeout' ,'dockerHostname' ,'name' ]
-DockerAPI api = new DockerAPI(new DockerServerEndpoint(cloudParameters.serverUrl, cloudParameters.credentialsId))
-api.with {
-  connectTimeout = cloudParameters.connectTimeout
-  readTimeout = cloudParameters.readTimeout
-  apiVersion = cloudParameters.version
-  hostname = cloudParameters.dockerHostname
-}
-DockerCloud newCloud = new DockerCloud(
-  cloudParameters.name,
-  api,
-  [template]
-)
-cloudParameters.findAll{!cloudParametersHandledSpecially.contains(it.key)}.each { k, v ->
-  if ( k=="disabled" ) {
-    DockerDisabled dd = new DockerDisabled()
-    dd.disabledByChoice = v
-    newCloud."$k" = dd
-  } else {
-    newCloud."$k" = v
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Now to push our data into Jenkins,
-// replacing (overwriting) any cloud of the same name with this config.
-/////////////////////////////////////////////////////////////////////////////
-
-// get Jenkins instance
-Jenkins jenkins = Jenkins.getInstance()
-
-// add/replace cloud configuration to Jenkins
-Cloud oldCloudOrNull = jenkins.clouds.getByName(cloudParameters.name)
-if ( oldCloudOrNull ) {
-  jenkins.clouds.remove(oldCloudOrNull)
-}
-jenkins.clouds.add(newCloud)
-
 // save current Jenkins state to disk
-jenkins.save()
+instance.save()
 
