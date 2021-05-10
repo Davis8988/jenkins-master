@@ -3,7 +3,7 @@
 
 DOCKER_IMAGE_TAG=artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7-configured
 BUILD_COMMAND_OPTS=$1
-DOCKER_FILE=dockerfile
+DOCKER_FILE=Dockerfile
 
 echo Building Jenkins Master Docker Image
 
