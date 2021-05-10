@@ -266,6 +266,7 @@ services:
     networks:
       - jenkins-net
     environment:
+      - SWARM_1_DOCKER_CLOUD_IMAGES=nimbus-1-ubuntu-bionic:artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/jenkins-slave:ubuntu-bionic-onecgf;nimbus-1-rhel-74:artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/jenkins-slave:rhel-74-onecgf
       - WIN_SLAVES_NAMES_STR=WIN7SLAVE02;WIN7SLAVE06
       - JENKINS_NAME=OneCGF
       - JENKINS_ADMIN_EMAIL=admin@admin.com
