@@ -6,3 +6,7 @@ containers-data/
 
 # dockerfiles data files
 dockerfiles/expanding_image
+
+# Offline Plugins Files
+expanding_image/jenkins_plugins/offline-plugins-files/
+
