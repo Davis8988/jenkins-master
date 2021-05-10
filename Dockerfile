@@ -43,7 +43,10 @@ COPY expanding_image/init.groovy.d/* /usr/share/jenkins/ref/init.groovy.d/
 # COPY expanding_image/seed-job/ /usr/share/jenkins/ref/jobs/seed-job
 COPY expanding_image/scriptApproval.xml /usr/share/jenkins/ref/scriptApproval.xml
 # COPY expanding_image/compute-seed-job-hash.sh /tmp/
+COPY expanding_image/conjur/ /tmp/conjur
 
+
+RUN keytool -import -noprompt -alias elbit -keystore  $JAVA_HOME/jre/lib/security/cacerts -file /tmp/conjur_ca_sub.crt
 
 # Must switch to root in order to update /etc/hosts file
 # USER root
