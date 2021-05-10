@@ -1,0 +1,59 @@
+import hudson.model.*
+import jenkins.model.*
+import java.util.logging.Logger
+import hudson.slaves.*
+import hudson.slaves.EnvironmentVariablesNodeProperty.Entry
+
+/**
+	Set env: 'WIN_SLAVES_NAMES_STR' for controlling creation of slaves nodes
+	Example: env.WIN_SLAVES_NAMES_STR = "WIN7SLAVE01;WIN7SLAVE02;WIN7SLAVE03"
+*/
+
+
+// Init
+def instance = Jenkins.getInstance()
+def currentConfiguredNodes = instance.computers
+def currentConfiguredNodesNamesList = currentConfiguredNodes.collect{it.displayName}
+def logger = Logger.getLogger("")
+def env = System.getenv()
+
+logger.info("Configuring Node Slves. Looking for env: WIN_SLAVES_NAMES_STR")
+
+String slavesNamesStr = env.WIN_SLAVES_NAMES_STR
+if (! slavesNamesStr) {logger.info("Skipping configure of Node Slves since env: 'WIN_SLAVES_NAMES_STR' is missing"); return}
+
+logger.info("Found env: 'WIN_SLAVES_NAMES_STR=${slavesNamesStr}'. Splitting it by ';'")
+String [] slavesNamesList = slavesNamesStr.split(";")
+
+
+Map slavesToAdd = [:]
+def launcher = null  // Default is by connecting it to the master
+
+slavesNamesStr = ""
+slavesNamesList.each {slaveName ->
+	slavesNamesStr += "\n${slaveName}"
+	// Define a "Permanent Agent"
+	Slave agent = new DumbSlave(
+			slaveName,
+			"C:\\JenkinsSlave",
+			launcher)
+	
+	agent.nodeDescription = "Agent node description"
+	agent.numExecutors = 1
+	agent.labelString = "agent-node-label"
+	agent.mode = Node.Mode.NORMAL
+	agent.retentionStrategy = new RetentionStrategy.Always()
+	// Create a "Permanent Agent"
+	if (slaveName in currentConfiguredNodesNamesList) {println "Skipping ${slaveName}"; return}
+	instance.addNode(agent)
+	println("Created node: ${slaveName}")
+}
+
+
+// List<Entry> env = new ArrayList<Entry>();
+// env.add(new Entry("key1","value1"))
+// env.add(new Entry("key2","value2"))
+// EnvironmentVariablesNodeProperty envPro = new EnvironmentVariablesNodeProperty(env);
+// agent.getNodeProperties().add(envPro)
+
+println("Finished creating all nodes: ${slavesNamesStr}")

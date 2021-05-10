@@ -9,6 +9,9 @@ def env = System.getenv()
 
 def baseUrl = env.JENKINS_BASE_URL
 if (baseUrl) {
+	logger.info("Found URL from env: JENKINS_BASE_URL='${baseUrl}'" )
+	baseUrl = baseUrl.replaceAll('"', "")
+	logger.info("Setting Base URL to: '${baseUrl}'" )
   def instance = Jenkins.getInstance()
   jenkinsLocationConfiguration = JenkinsLocationConfiguration.get()
   jenkinsLocationConfiguration.setUrl(baseUrl)
