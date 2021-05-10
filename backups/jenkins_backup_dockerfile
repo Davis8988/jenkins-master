@@ -1,0 +1,9 @@
+FROM nteptartifact:5014/jenkins/master:no_plugins
+
+ARG PROJECT_NAME
+ARG BACKUP_DATE
+
+LABEL maintainer="David Yair [DP99662]" description="$PROJECT_NAME Jenkins-Master backup" backup-date="$BACKUP_DATE" from-image="nteptartifact:5014/jenkins/master:no_plugins"
+
+COPY . /var/jenkins_home
+

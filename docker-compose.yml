@@ -1,11 +1,280 @@
 version: '3'
+
+networks:
+  jenkins-net:
+    driver: bridge
+
+volumes:
+    # Directory to be shared accross all jenkins masters containers
+    shared_jenkins_common_dir:
+        driver_opts:
+            type: none
+            device: /jenkins-common/shared
+            o: bind
+
 services:
-  jenkins:
-    container_name: jenkins-master
-    image: 'davis8988/jenkins-master:configured-2.194-lts'
+  
+  # sambashare-jenkins:
+  #   image: artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/sambashare:latest
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "1m"
+  #       max-file: "2"
+  #   container_name: jenkins-sambashare
+  #   volumes:
+  #     - ./shared_jenkins_common_dir:/jenkins-common
+  #   restart: unless-stopped
+  #   command: ["-p", "-u", "user;MyPass1234", "-s", "jenkins_shared;/shared;yes;no;yes;all;user;all;Jenkins servers common data. For plugins, Jobs and more"]
+  #   ports:
+  #     - "139:139"
+  #     - "445:445"
+  #   networks:
+  #     - jenkins-net
+  #   labels:
+  #     org.label-schema.group: "jenkins-master"
+
+  jenkins-ios:
+    image: artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7-configured
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    container_name: jenkins-master-ios
+    volumes:
+      - ./containers-data/ios/jenkins_home:/var/jenkins_home
+      - ./containers-data/shared_jenkins_common_dir:/mnt/jenkins-common/shared
+    restart: always
     ports:
-      - '8080:8080'
-      - '50000:50000'
+      - "8015:8080"
+      - "50015:50015"
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-k", "--fail", "http://localhost:8080/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - jenkins-net
     environment:
-      - "ARTIFACTORY_SERVER_ID=hello world"
-      - "DOCKER_CLOUD_NAME=hell its about time"
+      - JENKINS_NAME="IOS Jenkins"
+      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - JENKINS_MASTER_EXECUTORS=2
+      - JENKINS_SLAVEPORT=50015
+      - SMTP_HOST=10.0.50.249
+      - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8015
+    labels:
+      org.label-schema.group: "jenkins-master"
+    # depends_on:
+    #   - sambashare-jenkins
+
+  jenkins-interop:
+    image: artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7-configured
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    container_name: jenkins-master-interop
+    volumes:
+      - ./containers-data/interop/jenkins_home:/var/jenkins_home
+      - ./containers-data/shared_jenkins_common_dir:/mnt/jenkins-common/shared
+    restart: always
+    ports:
+      - "8044:8080"
+      - "50044:50044"
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-k", "--fail", "http://localhost:8080/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - jenkins-net
+    environment:
+      - JENKINS_NAME="InterOp Jenkins"
+      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - JENKINS_MASTER_EXECUTORS=2
+      - JENKINS_SLAVEPORT=50044
+      - SMTP_HOST=10.0.50.249
+      - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8044
+    labels:
+      org.label-schema.group: "jenkins-master"
+  
+  jenkins-ig:
+    image: artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7-configured
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    container_name: jenkins-master-ig
+    volumes:
+      - ./containers-data/ig/jenkins_home:/var/jenkins_home
+      - ./containers-data/shared_jenkins_common_dir:/mnt/jenkins-common/shared
+    restart: always
+    ports:
+      - "8086:8080"
+      - "50011:50011"
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-k", "--fail", "http://localhost:8080/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - jenkins-net
+    environment:
+      - JENKINS_NAME="IG Jenkins"
+      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - JENKINS_MASTER_EXECUTORS=2
+      - JENKINS_SLAVEPORT=50011
+      - SMTP_HOST=10.0.50.249
+      - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8086
+    labels:
+      org.label-schema.group: "jenkins-master"
+    
+  jenkins-grafana-mongodb:
+    image: artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7-configured
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    container_name: jenkins-master-grafana-mongodb
+    volumes:
+      - ./containers-data/grafana-mongodb/jenkins_home:/var/jenkins_home
+      - ./containers-data/shared_jenkins_common_dir:/mnt/jenkins-common/shared
+    restart: always
+    ports:
+      - "8035:8080"
+      - "50035:50035"
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-k", "--fail", "http://localhost:8080/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - jenkins-net
+    environment:
+      - JENKINS_NAME="Grafana-MongoDB Jenkins"
+      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - JENKINS_MASTER_EXECUTORS=2
+      - JENKINS_SLAVEPORT=50035
+      - SMTP_HOST=10.0.50.249
+      - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8035
+    labels:
+      org.label-schema.group: "jenkins-master"
+      
+  jenkins-site-management:
+    image: artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7-configured
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    container_name: jenkins-master-site-management
+    volumes:
+      - ./containers-data/site-management/jenkins_home:/var/jenkins_home
+      - ./containers-data/shared_jenkins_common_dir:/mnt/jenkins-common/shared
+    restart: always
+    ports:
+      - "8087:8080"
+      - "50305:50305"
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-k", "--fail", "http://localhost:8080/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - jenkins-net
+    environment:
+      - JENKINS_NAME="SiteManagement Jenkins"
+      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - JENKINS_MASTER_EXECUTORS=2
+      - JENKINS_SLAVEPORT=50305
+      - SMTP_HOST=10.0.50.249
+      - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8087
+    labels:
+      org.label-schema.group: "jenkins-master"
+        
+  jenkins-simengine:
+    image: artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7-configured
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    container_name: jenkins-master-simengine
+    volumes:
+      - ./containers-data/simengine/jenkins_home:/var/jenkins_home
+      - ./containers-data/shared_jenkins_common_dir:/mnt/jenkins-common/shared
+    restart: always
+    ports:
+      - "8054:8080"
+      - "50444:50444"
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-k", "--fail", "http://localhost:8080/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - jenkins-net
+    environment:
+      - JENKINS_NAME="SimEngine Jenkins"
+      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - JENKINS_MASTER_EXECUTORS=2
+      - JENKINS_SLAVEPORT=50444
+      - SMTP_HOST=10.0.50.249
+      - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8054
+    labels:
+      org.label-schema.group: "jenkins-master"
+          
+  jenkins-onecgf:
+    image: artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:2.213-centos7-configured
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    container_name: jenkins-master-onecgf
+    volumes:
+      - ./containers-data/onecgf/jenkins_home:/var/jenkins_home
+      - ./containers-data/shared_jenkins_common_dir:/mnt/jenkins-common/shared
+    restart: always
+    ports:
+      - "8081:8080"
+      - "50001:50001"
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-k", "--fail", "http://localhost:8080/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - jenkins-net
+    environment:
+      - JENKINS_NAME="OneCGF Jenkins"
+      - JENKINS_ADMIN_EMAIL="admin@admin.com"
+      - JENKINS_MASTER_EXECUTORS=2
+      - JENKINS_SLAVEPORT=50001
+      - SMTP_HOST=10.0.50.249
+      - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8081
+    labels:
+      org.label-schema.group: "jenkins-master"
+  
+  esl-portainer:
+    image: artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/esl-portainer:latest
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "2"
+    container_name: jenkins-portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
+    ports:
+      - "9007:9000"
+    command: -H unix:///var/run/docker.sock
+    networks:
+      - jenkins-net
+    labels:
+      org.label-schema.group: "jenkins-master"

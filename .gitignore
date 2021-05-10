@@ -1,0 +1,8 @@
+# Container Data Dir
+containers-data/
+
+# IntelliJ
+.idea/
+
+# dockerfiles data files
+dockerfiles/expanding_image

@@ -1,0 +1,8 @@
+# This dockerfile fixes an error in Jenkins Master image related to Global Shared Libs
+FROM artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/master:configured
+
+# Copy new groovy scripts
+COPY expanding_image/init.groovy.d/* /usr/share/jenkins/ref/init.groovy.d/
+
+
+

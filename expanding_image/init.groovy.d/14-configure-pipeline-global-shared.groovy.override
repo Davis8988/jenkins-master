@@ -1,0 +1,139 @@
+import java.util.logging.Logger
+import jenkins.model.Jenkins
+import jenkins.*
+import jenkins.model.*
+import hudson.*
+import hudson.model.*
+import com.cloudbees.plugins.credentials.*;
+
+// Init
+def logger = Logger.getLogger("")
+def instance = Jenkins.getInstance()
+def pluginManager = instance.getPluginManager()
+def credentialsId = System.getenv("PIPELINE_SHARED_LIB_CREDS_ID")
+name = 'pipeline-lib'
+defaultVersion = 'master'
+String credentials_username = "dp99662"
+
+// Check for plugins and vars values
+if (!pluginManager.getPlugin('git')) {logger.warning("Missing plugin: 'git'. Cannot configure pipeline shared library."); return}
+if (!pluginManager.getPlugin('workflow-cps-global-lib')) {logger.warning("Missing plugin: 'workflow-cps-global-lib'. Cannot configure shared libraries."); return}
+
+println('Configuring Pipeline Global Shared Library')
+
+// Safe to import plugins after we know they exist:
+import jenkins.plugins.git.GitSCMSource
+import jenkins.plugins.git.traits.BranchDiscoveryTrait
+import org.jenkinsci.plugins.workflow.libs.LibraryConfiguration
+import org.jenkinsci.plugins.workflow.libs.SCMSourceRetriever
+
+// Get credentials-id of defined username above
+def jenkinsCredentials_userNpass = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
+        com.cloudbees.plugins.credentials.common.StandardUsernameCredentials.class, // to get all credentials types use: com.cloudbees.plugins.credentials.Credentials.class
+        Jenkins.instance,
+        null,
+        null
+);
+
+// Search for credentials:
+Credentials targetCreds = jenkinsCredentials_userNpass.findResult { it.username == credentials_username ? it : null }
+
+if (targetCreds != null) {
+    // println "Found credentials: $targetCreds.username"
+    credentialsId = targetCreds.id
+}
+
+// global lib parameters
+//  implicit: true = load shared lib anyway in any pipeline
+def librariesToAddMap = [:]
+def globalLibrariesParameters = [
+        [
+                name:                 "jenkins-shared-lib",
+                branch:               "master",
+                credentialId:         credentialsId,
+                implicit:             false,
+                repository:           "http://10.0.0.189/devops_simulators/jenkins-shared-lib.git",
+                allowVersionOverride: true,
+                includeInChangesets:  true,
+        ],
+        [
+                name:                 "jenkins-core-shared-lib",
+                branch:               "master",
+                credentialId:         credentialsId,
+                implicit:             false,
+                repository:           "http://10.0.0.189/devops_simulators/jenkins-core-shared-lib.git",
+                allowVersionOverride: true,
+                includeInChangesets:  true,
+        ],
+        [
+                name:                 "properties-lib",
+                branch:               "master",
+                credentialId:         credentialsId,
+                implicit:             false,
+                repository:           "http://10.0.0.189/devops_simulators/jenkins-properties-lib.git",
+                allowVersionOverride: true,
+                includeInChangesets:  true,
+        ],
+]
+
+globalLibrariesParameters.each {libraryBuildConf ->
+        // define new global library
+        GitSCMSource gitSCMSource = new GitSCMSource(
+                "global-shared-library",
+                libraryBuildConf.repository,
+                libraryBuildConf.credentialId,
+                "*",
+                "",
+                false
+        )
+
+        gitSCMSource.traits = [new BranchDiscoveryTrait()]
+        // gitSCMSource.credentialsId = ""
+
+        // define retriever
+        SCMSourceRetriever sCMSourceRetriever = new SCMSourceRetriever(gitSCMSource)
+
+        // get Jenkins instance
+        Jenkins jenkins = Jenkins.getInstance()
+
+        // define new library configuration
+        LibraryConfiguration libraryConfiguration = new LibraryConfiguration(libraryBuildConf.name, sCMSourceRetriever)
+        // and configure it:
+        libraryConfiguration.defaultVersion = libraryBuildConf.branch
+        libraryConfiguration.implicit = libraryBuildConf.implicit
+        libraryConfiguration.allowVersionOverride = libraryBuildConf.allowVersionOverride
+        libraryConfiguration.includeInChangesets = libraryBuildConf.includeInChangesets
+        
+        println("Adding new global lib: ${libraryBuildConf.name}")
+        librariesToAddMap[libraryBuildConf.name] = libraryConfiguration
+}
+
+// get Jenkins Global Libraries
+def globalLibraries = instance.getDescriptor("org.jenkinsci.plugins.workflow.libs.GlobalLibraries")
+
+
+// Get current libraries and store into a Map: currentConfiguredLibsMap
+def currentConfiguredLibsList = globalLibraries.get().getLibraries()
+currentConfiguredLibsList.each {libraryConf ->
+        String libName = libraryConf.name
+        String libConfToAdd = librariesToAddMap.get(libName, null)
+        if (! libConfToAdd) {
+                println("Adding already configured global lib: ${libName}")
+                librariesToAddMap[libName] = libraryConf
+        }
+}
+
+// Add new libraries only if they don't already exist:
+String configuredLibsNames = ""
+def librariesToAddList = []
+librariesToAddMap.each {libName, libConf -> configuredLibsNames += "\n - ${libName}"; librariesToAddList.add(libConf)}
+
+// set new Jenkins Global Library
+globalLibraries.get().setLibraries(librariesToAddList)
+
+// save current Jenkins state to disk
+instance.save()
+
+
+println("Configured The following pipeline global shared libraries: ${configuredLibsNames}")
+
