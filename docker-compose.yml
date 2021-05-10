@@ -62,6 +62,7 @@ services:
       - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50015
+      - JENKINS_URL_PORT=8015
       - SMTP_HOST=10.0.50.249
       - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8015
     labels:
@@ -97,6 +98,7 @@ services:
       - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50044
+      - JENKINS_URL_PORT=8044
       - SMTP_HOST=10.0.50.249
       - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8044
     labels:
@@ -131,6 +133,7 @@ services:
       - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50011
+      - JENKINS_URL_PORT=8086
       - SMTP_HOST=10.0.50.249
       - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8086
     labels:
@@ -164,6 +167,7 @@ services:
       - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50035
+      - JENKINS_URL_PORT=8035
       - SMTP_HOST=10.0.50.249
       - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8035
     labels:
@@ -197,6 +201,7 @@ services:
       - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50305
+      - JENKINS_URL_PORT=8087
       - SMTP_HOST=10.0.50.249
       - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8087
     labels:
@@ -230,6 +235,7 @@ services:
       - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50444
+      - JENKINS_URL_PORT=8087
       - SMTP_HOST=10.0.50.249
       - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8054
     labels:
@@ -263,6 +269,7 @@ services:
       - JENKINS_ADMIN_EMAIL=admin@admin.com
       - JENKINS_MASTER_EXECUTORS=2
       - JENKINS_SLAVEPORT=50001
+      - JENKINS_URL_PORT=8081
       - SMTP_HOST=10.0.50.249
       - JENKINS_BASE_URL=http://${HOST_IP_ADDR}:8081
     labels:
