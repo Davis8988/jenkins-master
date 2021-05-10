@@ -149,7 +149,6 @@ nodelabelparameter
 p4
 parameterized-scheduler
 parameterized-trigger
-perforce
 performance
 perfpublisher
 periodicbackup
@@ -198,7 +197,6 @@ support-core
 text-file-operations
 text-finder-run-condition
 timestamper
-tfs
 token-macro
 validating-string-parameter
 variant
