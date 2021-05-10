@@ -1,0 +1,19 @@
+# Default
+deb [trusted=yes] http://artifactory.esl.corp.elbit.co.il/artifactory/Remote_debian_DMZ_il bionic main restricted
+deb [trusted=yes] http://artifactory.esl.corp.elbit.co.il/artifactory/Remote_debian_DMZ_il bionic-updates main restricted
+deb [trusted=yes] http://artifactory.esl.corp.elbit.co.il/artifactory/Remote_debian_DMZ_il bionic universe
+deb [trusted=yes] http://artifactory.esl.corp.elbit.co.il/artifactory/Remote_debian_DMZ_il bionic-updates universe
+deb [trusted=yes] http://artifactory.esl.corp.elbit.co.il/artifactory/Remote_debian_DMZ_il bionic multiverse
+deb [trusted=yes] http://artifactory.esl.corp.elbit.co.il/artifactory/Remote_debian_DMZ_il bionic-updates multiverse
+deb [trusted=yes] http://artifactory.esl.corp.elbit.co.il/artifactory/Remote_debian_DMZ_il bionic-backports main restricted universe multiverse
+deb [trusted=yes] http://artifactory.esl.corp.elbit.co.il/artifactory/Remote_debian_security_DMZ/ bionic-security main restricted
+deb [trusted=yes] http://artifactory.esl.corp.elbit.co.il/artifactory/Remote_debian_security_DMZ/ bionic-security universe
+deb [trusted=yes] http://artifactory.esl.corp.elbit.co.il/artifactory/Remote_debian_security_DMZ/ bionic-security multiverse
+
+# Microsoft
+deb [arch=amd64]  http://artifactory.esl.corp.elbit.co.il/artifactory/debian-remote-microsoft/ubuntu/18.04/prod bionic main
+
+# OneSIM
+deb [trusted=yes] http://artifactory.esl.corp.elbit.co.il/artifactory/Aerospace-Simulators-debian-local bionic onesim
+
+
