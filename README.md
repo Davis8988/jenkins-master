@@ -27,10 +27,11 @@ chmod +x ./create_backup_images.sh && ./create_backup_images.sh
 To build a new configured image edit the following:
 * Configuration scripts are at: expanding_image/init.groovy.d
 * Plugins list: expanding_image/jenkins_plugins/plugins.txt  
+* Define KEYTOOL_PASSWORD variable  
 
 CD into repo root dir and execute:
 ```
-docker build -t nteptartifact:5014/jenkins/master:configured --add-host=nteptartifact:10.0.50.49 --add-host=updates.jenkins-ci.org:10.0.50.49 .
+./build_jenkins_master_docker_image.sh "--build-arg KEYTOOL_PASSWORD=$KEYTOOL_PASSWORD"
 ```
 
 

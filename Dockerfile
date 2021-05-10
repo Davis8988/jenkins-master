@@ -6,6 +6,7 @@ LABEL maintainer="yair.david@elbitsystems.com"
 
 #  ARG httpProxy
 #  ARG noProxy
+ARG KEYTOOL_PASSWORD
 
 # Set JENKINS_UC to artifactory to enable download of plugins
 ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false" 
