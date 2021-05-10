@@ -36,7 +36,6 @@ Parameterized-Remote-Trigger
 PrioritySorter
 ace-editor
 active-directory
-analysis-core
 ansible
 apache-httpcomponents-client-4-api
 artifactory
