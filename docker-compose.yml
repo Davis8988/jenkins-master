@@ -196,6 +196,7 @@ services:
     networks:
       - jenkins-net
     environment:  
+      - SWARM_1_DOCKER_CLOUD_IMAGES=nimbus-1-ubuntu-bionic:artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/jenkins-slave:ubuntu-bionic-sitemanagement;nimbus-1-rhel-74:artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/jenkins-slave:rhel-74-sitemanagement
       - WIN_SLAVES_NAMES_STR=WIN7SLAVE01
       - JENKINS_NAME=SiteManagement
       - JENKINS_ADMIN_EMAIL=admin@admin.com
@@ -230,6 +231,7 @@ services:
     networks:
       - jenkins-net
     environment:
+      - SWARM_1_DOCKER_CLOUD_IMAGES=nimbus-1-ubuntu-bionic:artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/jenkins-slave:ubuntu-bionic-simengine;nimbus-1-rhel-74:artifactory.esl.corp.elbit.co.il/aerospace-simulators-devops-docker/jenkins/jenkins-slave:rhel-74-simengine
       - WIN_SLAVES_NAMES_STR=WIN7SLAVE04;SE-BUILDSERVER
       - JENKINS_NAME=SimEngine
       - JENKINS_ADMIN_EMAIL=admin@admin.com
